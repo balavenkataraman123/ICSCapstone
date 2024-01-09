@@ -11,22 +11,25 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
+
 public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     //dimensions of window
-    public static final int GAME_WIDTH = 1000;
-    public static final int GAME_HEIGHT = 1000;
-    public static int pixelScale = 1000;
+    public static final int GAME_WIDTH = 720;
+    public static final int GAME_HEIGHT = 720;
+    public static int pixelsPerMeter = 10;
 
     public Thread gameThread;
-    public Image image;
+    public Image image = Toolkit.getDefaultToolkit().createImage("raceTrack.png"); //draw off screen
+    ;
     public Graphics graphics;
     public RaceCompetitor ball;
 
 
     public GamePanel(){
         Car raceCar = new Car();
-        ball = new RaceCompetitor(GAME_WIDTH/2, GAME_HEIGHT/2, raceCar); //create a player controlled ball, set start location to middle of screen
+        ball = new RaceCompetitor(80, 80, raceCar); //create a player controlled ball, set start location to middle of screen
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
 
@@ -40,17 +43,29 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     //paint is a method in java.awt library that we are overriding. It is a special method - it is called automatically in the background in order to update what appears in the window. You NEVER call paint() yourself
     public void paint(Graphics g){
+        int centerx = (int) (ball.centerX * pixelsPerMeter + 0.5); // location of the car on the track
+        int centery = (int) (ball.centerY * pixelsPerMeter + 0.5);
+        // car's center coordinates are (360,360). Right now, it is 800,800. Image is moved by (360 - 800, 360-800)
+
+        AffineTransform affineTransform = AffineTransform.getTranslateInstance((360-centerx), (500-centery));
+        affineTransform.rotate(-ball.carAngle, centerx, centery);
+
         //we are using "double buffering here" - if we draw images directly onto the screen, it takes time and the human eye can actually notice flashes of lag as each pixel on the screen is drawn one at a time. Instead, we are going to draw images OFF the screen, then simply move the image on screen as needed.
-        image = createImage(GAME_WIDTH, GAME_HEIGHT); //draw off screen
-        graphics = image.getGraphics();
-        draw(graphics);//update the positions of everything on the screen
-        g.drawImage(image, 0, 0, this); //move the image on the screen
+        //graphics = image.getGraphics();
+        //draw(graphics);//update the positions of everything on the screen
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.drawImage(image, affineTransform, null);
+        ball.draw(g2d);
+
+        g2d.drawString("(C) 2024, Subpixel Studios",20,680);
+        g2d.drawString("Speed: " + (int) (ball.forwardSpeed * 2.2) + "mph",20,20);
+
 
     }
 
     //call the draw methods in each class to update positions as things move
     public void draw(Graphics g){
-        ball.draw(g);
     }
 
     //call the move methods in other classes to update positions
@@ -77,6 +92,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
             //only move objects around and update screen if enough time has passed
             if(delta >= 1){
+                System.out.println(delta);
                 move();
                 repaint();
                 delta--;
