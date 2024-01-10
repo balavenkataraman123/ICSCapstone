@@ -39,7 +39,8 @@ public class Car {
             return 0;
         }
         // turning circle = 11.5 meters. 11.5 * pi is time to turn 180 degrees. => pi radians in 11.5pi/v seconds -> angular velocity is pi * v / 11.5pi = v/11.5
-        return(Math.min((speed / 2*turnradius), (maxTireGrip / speed)));
+        // time = distance / speed.
+        return(Math.min((speed / turnradius), (maxTireGrip / speed)));
         //return( maxTireGrip / speed); // can't turn way too fast when the car is slow, cars don't work that way either
     }
     public double calculateAcceleration(int direction, double speed){

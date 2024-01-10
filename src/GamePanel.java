@@ -42,9 +42,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         gameThread = new Thread(this);
         gameThread.start();
     }
-
-    //paint is a method in java.awt library that we are overriding. It is a special method - it is called automatically in the background in order to update what appears in the window. You NEVER call paint() yourself
-    public void paint(Graphics g){
+    public void paintGame(Graphics g){
         int centerx = (int) (ball.centerX * pixelsPerMeter + 0.5); // location of the car on the track
         int centery = (int) (ball.centerY * pixelsPerMeter + 0.5);
         // car's center coordinates are (360,360). Right now, it is 800,800. Image is moved by (360 - 800, 360-800)
@@ -67,6 +65,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         g2d.drawString("(C) 2024, Subpixel Studios",20,1180);
         g2d.drawString("Speed: " + (int) (ball.forwardSpeed * 2.2) + "mph",20,20);
 
+    }
+
+    //paint is a method in java.awt library that we are overriding. It is a special method - it is called automatically in the background in order to update what appears in the window. You NEVER call paint() yourself
+    public void paint(Graphics g){
+        paintGame(g);
 
     }
 
