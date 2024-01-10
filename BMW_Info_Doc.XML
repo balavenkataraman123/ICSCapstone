@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <car>
-  <maxTireGrip>9.32</maxTireGrip>
-  <maxAccelB>13.606</maxAccelB>
-  <maxAccelM>-0.066</maxAccelM>
-  <maxBrake>11.505<maxBrake>
-  <maxSpeed>88.889<maxSpeed>
+  <maxTireGrip>9.81</maxTireGrip>
+  <maxAccelB>12.1965</maxAccelB>
+  <maxAccelM>-0.052</maxAccelM>
+  <maxBrake>12.052<maxBrake>
+  <maxSpeed>85<maxSpeed>
 </car>
