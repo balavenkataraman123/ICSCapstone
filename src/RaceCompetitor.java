@@ -6,14 +6,13 @@ In 2D GUI, basically everything is a rectangle even if it doesn't look like it!
 */
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 
 public class RaceCompetitor extends Rectangle{
     // car dimensions are rounded up to nearest
 
     public Car raceCar;
 
-    public double acceleration = 0;
+    public int acceldir = 0;
     public double carAngle = 0;
     public double forwardSpeed = 0;
     public double AngularVelocity = 0; // degrees per frame. Turning speed is set for each car.
@@ -50,11 +49,12 @@ public class RaceCompetitor extends Rectangle{
 
         if(e.getKeyChar() == 'w'){
             System.out.print("vroomvroom");
-            acceleration = raceCar.calculateAcceleration(forwardSpeed);
+
+            acceldir = 1;
         }
 
         if(e.getKeyChar() == 's'){
-            acceleration = - raceCar.calculateAcceleration(forwardSpeed);
+            acceldir = -1;
 
         }
     }
@@ -63,11 +63,11 @@ public class RaceCompetitor extends Rectangle{
     //Makes the car stop moving in that direction
     public void keyReleased(KeyEvent e){
         if(e.getKeyChar() == 'w'){
-            acceleration = 0;
+            acceldir = 0;
         }
 
         if(e.getKeyChar() == 's'){
-            acceleration = 0;
+            acceldir = 0;
         }
         if(e.getKeyChar() == 'a'){
             carTurnSpeed = 0;
@@ -83,7 +83,7 @@ public class RaceCompetitor extends Rectangle{
     public void move(){
         //System.out.println(acceleration);
         carAngle += carTurnSpeed * (1.0/60);
-        forwardSpeed = Math.max(0, Math.min(raceCar.maxSpeed, forwardSpeed + acceleration));
+        forwardSpeed = Math.max(0, Math.min(raceCar.maxSpeed, forwardSpeed + acceldir *raceCar.calculateAcceleration(acceldir, forwardSpeed)));
         //System.out.println("Speed: " + forwardSpeed);
         if(reverseGearEngaged){
             forwardSpeed = -forwardSpeed;
@@ -97,8 +97,8 @@ public class RaceCompetitor extends Rectangle{
     //called frequently from the GamePanel class
     //draws the current location of the ball to the screen
     public void draw(Graphics2D g){
-        g.drawImage(raceCar.carImage, 360,500,null);
-        //g.fillRect((int) (360 + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (360 + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), raceCar.CAR_WIDTH*GamePanel.pixelsPerMeter, raceCar.CAR_LENGTH*GamePanel.pixelsPerMeter);
+        g.drawImage(raceCar.carImage,(int) (600 + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (900 + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), null);
+        //g.fillRect(, raceCar.CAR_LENGTH*GamePanel.pixelsPerMeter);
     }
 
 }

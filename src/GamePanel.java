@@ -16,13 +16,15 @@ import java.awt.geom.AffineTransform;
 public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     //dimensions of window
-    public static final int GAME_WIDTH = 720;
-    public static final int GAME_HEIGHT = 720;
-    public static int pixelsPerMeter = 10;
+    public static final int GAME_WIDTH = 1200;
+    public static final int GAME_HEIGHT = 1200;
+    public static int pixelsPerMeter = 50;
 
     public Thread gameThread;
-    public Image image = Toolkit.getDefaultToolkit().createImage("raceTrack.png"); //draw off screen
-    ;
+    public Image image = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance(8000, 8000, Image.SCALE_DEFAULT); //draw off screen
+
+    public Image minimap = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance(200, 200, Image.SCALE_DEFAULT); //draw off screen
+
     public Graphics graphics;
     public RaceCompetitor ball;
 
@@ -47,7 +49,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         int centery = (int) (ball.centerY * pixelsPerMeter + 0.5);
         // car's center coordinates are (360,360). Right now, it is 800,800. Image is moved by (360 - 800, 360-800)
 
-        AffineTransform affineTransform = AffineTransform.getTranslateInstance((360-centerx), (500-centery));
+        AffineTransform affineTransform = AffineTransform.getTranslateInstance((600-centerx), (900-centery));
         affineTransform.rotate(-ball.carAngle, centerx, centery);
 
         //we are using "double buffering here" - if we draw images directly onto the screen, it takes time and the human eye can actually notice flashes of lag as each pixel on the screen is drawn one at a time. Instead, we are going to draw images OFF the screen, then simply move the image on screen as needed.
@@ -56,9 +58,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(image, affineTransform, null);
+        g2d.drawImage(minimap, 20,880,null);
+        g2d.setColor(Color.black);
+        g2d.fillOval(centerx/40 + 20 - 5, centery/40+880 - 5,10,10);
         ball.draw(g2d);
-
-        g2d.drawString("(C) 2024, Subpixel Studios",20,680);
+        g2d.setFont(new Font("Arial", Font.PLAIN, 20));
+        g2d.drawString("Minimap", 20,850);
+        g2d.drawString("(C) 2024, Subpixel Studios",20,1180);
         g2d.drawString("Speed: " + (int) (ball.forwardSpeed * 2.2) + "mph",20,20);
 
 

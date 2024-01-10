@@ -3,7 +3,8 @@ import java.awt.image.BufferedImage;
 
 public class Car {
     // Parameters of the car. all are in SI units.
-    // should be reading from a file, but right now it is hard coded for a Toyota Corolla.
+    public String carName = "Corvette C7 ZR1";
+    public String description = "This is the fastest car made by General Motors, equipped with a 6.7 liter supercharged LT1 V8 engine that produces over 700 horsepower";
     public int CAR_LENGTH = 5;
     public int CAR_WIDTH = 2;
 
@@ -17,11 +18,12 @@ public class Car {
     // turning speed is higher in lighter cars like the Mazda RX7 and lower in heavier cars like BMW M5.
     public double maxDamage; // amount of damage car has to sustain to be eliminated. Depends on material used in real life car.
     public double maxSpeed = 100; // max speed of the car
-    public double pictureFilePath;
+    public String pictureFilePath = "corvette.png";
+    public double turnradius = 11.5;
 
     public Image carImage; //draw off screen
     public Car(){
-        carImage = Toolkit.getDefaultToolkit().createImage("corvette.png").getScaledInstance(GamePanel.pixelsPerMeter*CAR_WIDTH, GamePanel.pixelsPerMeter*CAR_LENGTH, Image.SCALE_DEFAULT);
+        carImage = Toolkit.getDefaultToolkit().createImage(pictureFilePath).getScaledInstance(GamePanel.pixelsPerMeter*CAR_WIDTH, GamePanel.pixelsPerMeter*CAR_LENGTH, Image.SCALE_DEFAULT);
         return;
     }
     // this calculates the turning rate of the car
@@ -37,11 +39,17 @@ public class Car {
             return 0;
         }
         // turning circle = 11.5 meters. 11.5 * pi is time to turn 180 degrees. => pi radians in 11.5pi/v seconds -> angular velocity is pi * v / 11.5pi = v/11.5
-        return(Math.min((speed / 23), (maxTireGrip / speed)));
+        return(Math.min((speed / 2*turnradius), (maxTireGrip / speed)));
         //return( maxTireGrip / speed); // can't turn way too fast when the car is slow, cars don't work that way either
     }
-    public double calculateAcceleration(double speed){
-        return 5.0/60;
+    public double calculateAcceleration(int direction, double speed){
+
+        if(direction == 1){
+            return 5.0/60;
+        }
+        else{
+            return(10.0/60);
+        }
     }
 
 }
