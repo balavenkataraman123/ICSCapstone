@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <car>
+<!--This stores the attributes of the Mercedes-->
   <maxTireGrip>6.867</maxTireGrip>
   <maxAccelB>9.1797</maxAccelB>
   <maxAccelM>-0.02927</maxAccelM>
