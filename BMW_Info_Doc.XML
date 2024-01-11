@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <car>
+<!--This stores the attributes of the BMW-->
   <maxTireGrip>9.81</maxTireGrip>
   <maxAccelB>12.1965</maxAccelB>
   <maxAccelM>-0.052</maxAccelM>
