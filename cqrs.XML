@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cars>
+  <!--This stores the attributes of the BMW-->
+  <car id="BMW">
+  <maxTireGrip>9.81</maxTireGrip>
+  <maxAccelB>12.1965</maxAccelB>
+  <maxAccelM>-0.052</maxAccelM>
+  <maxBrake>12.052</maxBrake>
+  <maxSpeed>85</maxSpeed>
+  <carName>"BMW M5 Competition"</carName>
+  <description>"As the crown jewel of BMW, this car comes with with a 4.4-litre V-8 engine with over 600 horsepower"</description>
+  <turnradius>6.3</turnradius>
+  </car>
+  <car id="Corvette">
+  <maxTireGrip>11.5758</maxTireGrip>
+  <maxAccelB>10.6264</maxAccelB>
+  <maxAccelM>-0.03892</maxAccelM>
+  <maxBrake>12.346</maxBrake>
+  <maxSpeed>95.5556</maxSpeed>
+  <carName>"Corvette C7 ZR1"</carName>
+  <description>"This is the fastest car made by General Motors, equipped with a 6.7 liter supercharged LT1 V8 engine that produces over 700 horsepower"</description>
+  <turnradius>5.75</turnradius>
+</cars>
