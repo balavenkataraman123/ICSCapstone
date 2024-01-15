@@ -12,12 +12,15 @@ import java.awt.image.BufferedImage;
 import static java.lang.Float.parseFloat;
 
 */
+import org.w3c.dom.Element;
+
 import java.awt.*;
+
+import static java.lang.Float.parseFloat;
 
 public class Car {
     // Parameters of the car, all are in SI units.  Currently hard coded with the performance data of the Corvette C7 ZR1.
-    public String carName = "Corvette C7 ZR1";
-    public String description = "This is the fastest car made by General Motors, equipped with a 6.7 liter supercharged LT1 V8 engine that produces over 700 horsepower";
+    public String carName;
     public int CAR_LENGTH = 5; // size of the car for rendering and collision physics (pending)
     public int CAR_WIDTH = 2;
 
@@ -29,30 +32,28 @@ public class Car {
     // braking strength is generally constant.
     public double maxBrake = 12.346;
     // turning speed is higher in lighter cars like the Mazda RX7 and lower in heavier cars like BMW M5.
-    public double maxDamage; // amount of damage car has to sustain to be eliminated. Depends on material used in real life car.
     public double maxSpeed = 100; // max speed of the car
-    public double turnradius = 11.5; // turning radius of the car
+    public double turnRadius = 11.5; // turning radius of the car
 
     public Image carImage;
-    public Car(String carName) throws Exception { // "throws Exception" part will work when actual files are being read.
-
-        // THESE THINGS ARE CURRENTL NOT USED. THEY ARE IN COMMENTS BUT IT HASN'T BEEN COMPLETE YET. RIGHT NOW ONLY ONE CAR'S DATA IS THERE AND IS HARD CODED.
-        /*
-        Document document = XMLReader.readXMLDocumentFromFile(carName + ".XML");
-        Element carData = document.getDocumentElement();
-        System.out.println(carData.getAttributes().getLength());
-        //NodeList nList = document.getElementsByTagName("car");
-        //Element carData = (Element) nList.item(0);
-        maxTireGrip = parseFloat(carData.getAttribute("maxTireGrip"));
-        maxAccelM = parseFloat(carData.getAttribute("maxAccelM"));
-        maxAccelB = parseFloat(carData.getAttribute("maxAccelB"));
-        maxSpeed = parseFloat(carData.getAttribute("maxSpeed"));
-        maxBrake = parseFloat(carData.getAttribute("maxBrake"));
-
-
-         */
+    public Car(int carID){
+        try{
+        Element car = (Element) GamePanel.carList.item(carID);
+        carName = car.getAttribute("id");
+        maxTireGrip = parseFloat(car.getElementsByTagName("maxTireGrip").item(0).getTextContent());
+        maxAccelM = parseFloat(car.getElementsByTagName("maxAccelM").item(0).getTextContent());
+        maxAccelB = parseFloat(car.getElementsByTagName("maxAccelB").item(0).getTextContent());
+        maxSpeed = parseFloat(car.getElementsByTagName("maxSpeed").item(0).getTextContent());
+        maxBrake = parseFloat(car.getElementsByTagName("maxBrake").item(0).getTextContent());
+        turnRadius = parseFloat(car.getElementsByTagName("turnradius").item(0).getTextContent());
         carImage = Toolkit.getDefaultToolkit().createImage(carName + ".png").getScaledInstance(GamePanel.pixelsPerMeter*CAR_WIDTH, GamePanel.pixelsPerMeter*CAR_LENGTH, Image.SCALE_DEFAULT); // Returns an image of the car scaled to the correct size.
-    }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        }
+
     // this calculates the turning rate of the car
     // this is the angular velocity such that the friction from the car's tires provides just enough centripetal force to turn the car.
     // the car has a max. acceleration. When it is under linear acceleration, turning ability is limited.
@@ -69,7 +70,7 @@ public class Car {
         // The car turns slower at high speeds, but even at low speeds, it can only take a turn as tight as its turning radius (each car has one).
         // turning circle = 11.5 meters. 11.5 * pi is time to turn 180 degrees. => pi radians in 11.5pi/v seconds -> angular velocity is pi * v / 11.5pi = v/11.5
         // time = distance / speed.
-        return(Math.min((speed / turnradius), (maxTireGrip / speed)));
+        return(Math.min((speed / turnRadius), (maxTireGrip / speed)));
     }
     public double calculateAcceleration(int direction, double speed){  // Increases
 

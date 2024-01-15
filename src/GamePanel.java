@@ -9,6 +9,8 @@ Implements Runnable interface to use "threading" - let the game do two things at
 ICS Summative, Bala V, Darian Y, ICS4U 2024. LightSpeed racing game.
 
 */
+import org.w3c.dom.NodeList;
+
 import java.awt.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -20,12 +22,13 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
-    public static double scaleMultiplier = 0.5; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
+    public static double scaleMultiplier = 1; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
 
     //dimensions of window
     public static final int GAME_WIDTH = (int) (1200 * scaleMultiplier); // game resolution
     public static final int GAME_HEIGHT = (int) ( 1200 * scaleMultiplier);
     public static int pixelsPerMeter = (int) (50 * scaleMultiplier); // display scaling
+    public static NodeList carList;
 
     public Thread gameThread;
     public Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
@@ -42,22 +45,24 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public boolean gameRunning = false;
 
+    public int chosencarID = 0;
+
+    public int chosentrackID = 0;
+
 
     public GamePanel(){
-        File audioFile;
+        // the function to start the game
+        File audioFile; // loads the game music
         AudioInputStream audioStream;
-        Car raceCar = null;
-        try {
-            raceCar = new Car("corvette"); // To be changed to a better selection interface
+        try{
+            carList = XMLReader.readXMLDocumentFromFile("cars.XML").getElementsByTagName("car");
         }
-        catch (Exception e){
-            System.out.println(e);
-            System.out.println("Car data file failed to be read. Stopping game.");
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("failed to load car data. closing program");
             System.exit(1);
         }
-
         try{ // tries to load an audio file
-
             audioFile = new File("tokyodriftsong.wav");
             audioStream = AudioSystem.getAudioInputStream(audioFile);
 
@@ -73,7 +78,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             System.out.println("Sound does not work now. Proceeding to run game anyway");
         }
 
-        player = new RaceCompetitor(20, 80, raceCar); //create a player controlled ball, set start location to middle of screen
+
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
 
@@ -99,11 +104,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         g2d.drawImage(minimap, (int) (20*scaleMultiplier),(int)(880 * scaleMultiplier),null);
         g2d.setColor(Color.black);
         g2d.fillOval(centerx/40 + (int) (20*scaleMultiplier) - 5,  centery/40 + (int) (880*scaleMultiplier) - 5,10,10); // draws the car on the map
-
         // draws text UI elements
-
         g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
-
         //g2d.drawString("Minimap", 20,850);
         g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1180*scaleMultiplier));
         g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2) + "mph",20,20);
@@ -137,7 +139,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     //call the move methods in other classes to update positions
     //this method is constantly called from run(). By doing this, movements appear fluid and natural. If we take this out the movements appear sluggish and laggy
     public void move(){ // updates the car position
-        player.move();
+        if(gameRunning) {
+            player.move();
+        }
     }
 
     //handles all collision detection and responds accordingly
@@ -165,6 +169,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             }
         }
     }
+    public void startGame(){
+        gameRunning = true;  // starts the game and stops the music when space is pressed.
+        player = new RaceCompetitor(20, 80,new Car(chosencarID));
+
+        if(musicWorks){
+            introSong.stop();
+        }
+    }
 
     //if a key is pressed, we'll send it over to the PlayerBall class for processing
     public void keyPressed(KeyEvent e){
@@ -173,10 +185,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         }
         else{
             if(e.getKeyCode()== 32){ // CHANGE THIS TO 49 FOR RUNNING ON MACOS
-                gameRunning = true;  // starts the game and stops the music when space is pressed.
-                if(musicWorks){
-                    introSong.stop();
-                }
+                startGame();
             }
         }
     }
