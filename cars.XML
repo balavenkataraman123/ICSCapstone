@@ -20,4 +20,5 @@
   <carName>"Corvette C7 ZR1"</carName>
   <description>"This is the fastest car made by General Motors, equipped with a 6.7 liter supercharged LT1 V8 engine that produces over 700 horsepower"</description>
   <turnradius>5.75</turnradius>
+  </car>
 </cars>
