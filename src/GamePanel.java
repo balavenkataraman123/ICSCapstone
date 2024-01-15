@@ -13,7 +13,6 @@ import java.awt.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -21,18 +20,19 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
+    public static double scaleMultiplier = 0.5; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
 
     //dimensions of window
-    public static final int GAME_WIDTH = 1200; // game resolution
-    public static final int GAME_HEIGHT = 1200;
-    public static int pixelsPerMeter = 50; // display scaling
+    public static final int GAME_WIDTH = (int) (1200 * scaleMultiplier); // game resolution
+    public static final int GAME_HEIGHT = (int) ( 1200 * scaleMultiplier);
+    public static int pixelsPerMeter = (int) (50 * scaleMultiplier); // display scaling
 
     public Thread gameThread;
-    public Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance(1200, 1200, Image.SCALE_DEFAULT); // background image of the splash screen.
+    public Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
 
-    public Image image = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance(8000, 8000, Image.SCALE_DEFAULT); // Hard coded track image for now. Will use racetrack class when complete
+    public Image image = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance((int) (8000 * scaleMultiplier), (int) (8000 * scaleMultiplier), Image.SCALE_DEFAULT); // Hard coded track image for now. Will use racetrack class when complete
 
-    public Image minimap = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance(200, 200, Image.SCALE_DEFAULT); // minimap, smaller scaled version of main image. feature disabled due to graphical glitches, to be fixed soon.
+    public Image minimap = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance((int) (200 * scaleMultiplier), (int) (200 * scaleMultiplier), Image.SCALE_DEFAULT); // minimap, smaller scaled version of main image. feature disabled due to graphical glitches, to be fixed soon.
 
     public Clip introSong; // Audio file to play start screen music.
 
@@ -73,7 +73,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             System.out.println("Sound does not work now. Proceeding to run game anyway");
         }
 
-        player = new RaceCompetitor(80, 80, raceCar); //create a player controlled ball, set start location to middle of screen
+        player = new RaceCompetitor(20, 80, raceCar); //create a player controlled ball, set start location to middle of screen
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
 
@@ -89,24 +89,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         int centerx = (int) (player.centerX * pixelsPerMeter + 0.5); // location of the car on the track in pixels instead of meters.
         int centery = (int) (player.centerY * pixelsPerMeter + 0.5);
 
-        AffineTransform affineTransform = AffineTransform.getTranslateInstance((600-centerx), (900-centery)); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
+        AffineTransform affineTransform = AffineTransform.getTranslateInstance((600*scaleMultiplier - centerx), (900*scaleMultiplier - centery)); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
         affineTransform.rotate(-player.carAngle, centerx, centery);// applies a rotational matrix transformation on the track image so it turns along with the car.
 
 
         g2d.drawImage(image, affineTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
 
-        // Commented code which draws a Mini map. Needs some improving.
-
-        //g2d.drawImage(minimap, 20,880,null);
-        //g2d.setColor(Color.black);
-        //g2d.fillOval(centerx/40 + 20 - 5, centery/40+880 - 5,10,10);
+        // code which draws the mini map. might not work well when scale is changed. need to fix, so its commented.
+        g2d.drawImage(minimap, (int) (20*scaleMultiplier),(int)(880 * scaleMultiplier),null);
+        g2d.setColor(Color.black);
+        g2d.fillOval(centerx/40 + (int) (20*scaleMultiplier) - 5,  centery/40 + (int) (880*scaleMultiplier) - 5,10,10); // draws the car on the map
 
         // draws text UI elements
 
-        g2d.setFont(new Font("Arial", Font.PLAIN, 20));// sets text font
+        g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
 
         //g2d.drawString("Minimap", 20,850);
-        g2d.drawString("(C) 2024, Subpixel Studios",20,1180);
+        g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1180*scaleMultiplier));
         g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2) + "mph",20,20);
         player.draw(g2d);
     }
@@ -114,12 +113,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public void paintSplashScreen(Graphics g){ // draws the pre game UI
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(splashScreenBG, 0,0,null);
-        g2d.setFont(new Font("Arial", Font.PLAIN, 20));// sets text font
+        g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
         // displays information text
-        g2d.drawString("Press space to play. UI not complete yet. ",500,1090);
-        g2d.drawString("And yes, this is a photoshopped version of the Tokyo Drift movie poster. ",250,1120);
-        g2d.drawString("Song is from the movie as well. Both subject to change.",250,1150);
-        g2d.drawString("W: gas. S:brake; A,S: Steering. R: toggle reverse gear",250,1180);
+        g2d.drawString("Press space to play. UI not complete yet. ", (int) (500*scaleMultiplier), (int) (1090*scaleMultiplier));
+        g2d.drawString("And yes, this is a photoshopped version of the Tokyo Drift movie poster. ", (int) (250*scaleMultiplier), (int) (1120*scaleMultiplier));
+        g2d.drawString("Song is from the movie as well. Both subject to change.", (int) (250*scaleMultiplier), (int) (1150*scaleMultiplier));
+        g2d.drawString("W: gas. S:brake; A,S: Steering. R: toggle reverse gear", (int) (250*scaleMultiplier), (int) (1180*scaleMultiplier));
 
 
     }

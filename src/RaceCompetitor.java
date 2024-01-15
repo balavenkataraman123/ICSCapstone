@@ -97,7 +97,7 @@ public class RaceCompetitor extends Rectangle{
     //called frequently from the GamePanel class
     //draws the current location of the car to the screen
     public void draw(Graphics2D g){ // draws car at center location on screen.
-        g.drawImage(raceCar.carImage,(int) (600 + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (900 + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), null);
+        g.drawImage(raceCar.carImage,(int) (600 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (900 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), null);
     }
 
 }
