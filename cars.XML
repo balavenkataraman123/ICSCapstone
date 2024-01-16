@@ -38,7 +38,7 @@
     <maxBrake>11.505</maxBrake>
     <maxSpeed>88.889</maxSpeed>
     <carName>"Nissan GTR Nismo"</carName>
-    <description>"This massive sports car boasts 565 horsepower, with a 3.8-litre V-6 engine and 467 pound-feet of torque"</description>
+    <description>"This powerful and agile sports car boasts 565 horsepower, with a 3.8-litre V-6 engine and 467 pound-feet of torque"</description>
     <turnradius>6.25</turnradius>
   </car>
 </cars>

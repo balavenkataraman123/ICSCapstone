@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--This stores the attributes of the Corvette-->
-<car id="Corvette">
-  <maxTireGrip>11.5758</maxTireGrip>
-  <maxAccelB>10.6264</maxAccelB>
-  <maxAccelM>-0.03892</maxAccelM>
-  <maxBrake>12.346</maxBrake>
-  <maxSpeed>95.5556</maxSpeed>
-</car>

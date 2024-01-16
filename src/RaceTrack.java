@@ -11,7 +11,15 @@ public class RaceTrack {
     public RaceTrack(String trackPath){
         fullImage = null;
     }
+    // plans
+    // break the track up into segments, with each of them being 200 x 200 m. Supersample images on demand. If the image location is same as previous, return zero. otherwise, return the image.
+
+    // make a function to get the track's image given that
     public Image getCurrentTrackSegment(double centerx, double centery){
         return TrackTopDown.get(0).get(0);
+    }
+    // collision detection function
+    public double isColliding(){
+        return 0;
     }
 }
