@@ -35,6 +35,8 @@ public class Car {
     public double maxSpeed = 100; // max speed of the car
     public double turnRadius = 11.5; // turning radius of the car
 
+
+
     public Image carImage;
     public Car(int carID){
         try{

@@ -19,6 +19,7 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
@@ -29,6 +30,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public static final int GAME_HEIGHT = (int) ( 1200 * scaleMultiplier);
     public static int pixelsPerMeter = (int) (50 * scaleMultiplier); // display scaling
     public static NodeList carList;
+    public static NodeList trackList;
+
 
     public Thread gameThread;
     public Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
@@ -43,11 +46,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public RaceCompetitor player; // player object
 
+    public RaceTrack raceTrack; // racetrack object
+
     public boolean gameRunning = false;
 
     public int chosencarID = 0;
 
     public int chosentrackID = 0;
+
+    public int lastimagex = 999999;
+    public int lastimagey = 999999;
+    public int[] nextcheckpoint;
 
 
     public GamePanel(){
@@ -56,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         AudioInputStream audioStream;
         try{
             carList = XMLReader.readXMLDocumentFromFile("cars.XML").getElementsByTagName("car");
+            trackList = XMLReader.readXMLDocumentFromFile("tracks.XML").getElementsByTagName("track");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -65,7 +75,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         try{ // tries to load an audio file
             audioFile = new File("tokyodriftsong.wav");
             audioStream = AudioSystem.getAudioInputStream(audioFile);
-
             // Create a clip
             introSong = AudioSystem.getClip();
             introSong.open(audioStream);
@@ -77,7 +86,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             e.printStackTrace();
             System.out.println("Sound does not work now. Proceeding to run game anyway");
         }
-
 
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
@@ -98,6 +106,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         affineTransform.rotate(-player.carAngle, centerx, centery);// applies a rotational matrix transformation on the track image so it turns along with the car.
 
 
+       // try{/
+        //    image =
+
+  //      }
+
         g2d.drawImage(image, affineTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
 
         // code which draws the mini map. might not work well when scale is changed. need to fix, so its commented.
@@ -110,6 +123,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1180*scaleMultiplier));
         g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2) + "mph",20,20);
         player.draw(g2d);
+        raceTrack.checkPositions(player);
     }
 
     public void paintSplashScreen(Graphics g){ // draws the pre game UI
@@ -172,7 +186,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public void startGame(){
         gameRunning = true;  // starts the game and stops the music when space is pressed.
         player = new RaceCompetitor(20, 80,new Car(chosencarID));
+        try {
+            raceTrack = new RaceTrack("deeznuts.png");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Could not load the race track file. ");
+            System.exit(1);
 
+        }
         if(musicWorks){
             introSong.stop();
         }
