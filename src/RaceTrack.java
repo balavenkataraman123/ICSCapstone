@@ -61,7 +61,7 @@ public class RaceTrack {
         double caCos = Math.cos(carAngle);
         double currentX, currentY;
         boolean crashed = false;
-        double crash_angle = 0;
+        int crashes = 0;
 
 
         // applies the affine transformation on all the corners. matrix is
@@ -74,15 +74,11 @@ public class RaceTrack {
             int blue = color & 0xff;
             int green = (color & 0xff00) >> 8;
             int red = (color & 0xff0000) >> 16;
-            System.out.println(Math.max(blue, Math.max(red, green)));
-            if(Math.max(blue, Math.max(red, green)) <= 20){
-                crashed = true;
-                System.out.println("CRASHEDDDDD");
-                System.out.println(i);
-
+            if(red+blue+green <= 60){
+                crashes = crashes | 1 << i; // stores the corner of the car that got hit.
             }
         }
-        return 0;
+        return crashes;
 
     }
     public Image getMiniMap(){

@@ -148,9 +148,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     //call the move methods in other classes to update positions
     //this method is constantly called from run(). By doing this, movements appear fluid and natural. If we take this out the movements appear sluggish and laggy
     public void move(){ // updates the car position
+        int crashes;
         if(gameRunning) {
             player.move();
-            raceTrack.onTrack(player.centerX,player.centerY, player.carAngle);
+            crashes = raceTrack.onTrack(player.centerX,player.centerY, player.carAngle);
+            player.bounce(crashes);
+
         }
     }
 

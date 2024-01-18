@@ -93,6 +93,37 @@ public class RaceCompetitor extends Rectangle{
         centerX += xVelocity * (1.0/60); // updates positioning of the car.
         centerY += yVelocity * (1.0/60);
     }
+    public void bounce(int crashes){
+        if (crashes != 0){
+            if(reverseGearEngaged){
+                forwardSpeed = -forwardSpeed;
+            }
+        }
+        if((crashes & 3) != 0){
+            System.out.println("Front");
+            centerX -= Math.sin(carAngle) * forwardSpeed / 30;
+            centerY += Math.cos(carAngle) * forwardSpeed / 30;
+            forwardSpeed = 0;
+        }
+        if((crashes & 9) != 0){
+            System.out.println("Left");
+            centerX -= Math.cos(carAngle) * forwardSpeed / 30;
+            centerY += Math.sin(carAngle) * forwardSpeed /30;
+            forwardSpeed = 0;
+        }
+        if((crashes & 12) != 0){
+            System.out.println("back");
+            centerX += Math.sin(carAngle) * forwardSpeed / 30;
+            centerY -= Math.cos(carAngle) * forwardSpeed / 30;
+            forwardSpeed = 0;
+        }
+        if((crashes & 6) != 0){
+            System.out.println("Right");
+            centerX += Math.cos(carAngle) * forwardSpeed / 30;
+            centerY -= Math.sin(carAngle) * forwardSpeed / 30;
+            forwardSpeed = 0;
+        }
+    }
 
     //called frequently from the GamePanel class
     //draws the current location of the car to the screen
