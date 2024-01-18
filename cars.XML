@@ -11,7 +11,7 @@
     <description>"As the crown jewel of BMW, this car comes with a 4.4-litre V-8 engine with over 600 horsepower"</description>
     <turnradius>6.3</turnradius>
   </car>
-  <car id="Corvette">
+  <car id="corvette">
     <maxTireGrip>11.5758</maxTireGrip>
     <maxAccelB>10.6264</maxAccelB>
     <maxAccelM>-0.03892</maxAccelM>
@@ -21,7 +21,7 @@
     <description>"This is the fastest car made by General Motors, equipped with a 6.7-litre supercharged LT1 V8 engine that produces over 700 horsepower"</description>
     <turnradius>5.75</turnradius>
   </car>
-  <car id="Mercedes">
+  <car id="mercedes">
     <maxTireGrip>6.867</maxTireGrip>
     <maxAccelB>9.1797</maxAccelB>
     <maxAccelM>-0.02927</maxAccelM>
@@ -31,7 +31,7 @@
     <description>"Under the clean and stylish look of this car is a 5.5-litre twin-turbo V8 engine with 580 horsepower"</description>
     <turnradius>6.25</turnradius>
   </car>
-  <car id="Nissan">
+  <car id="nissan">
     <maxTireGrip>9.32</maxTireGrip>
     <maxAccelB>13.606</maxAccelB>
     <maxAccelM>-0.066</maxAccelM>

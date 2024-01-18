@@ -26,16 +26,8 @@ public class Car {
 
     // Acceleration reduces linearly with the speed of the car, so it is almost zero as the car approaches max speed. This is how real cars work.
     // so since it's y=MX+B where X is speed, there is an M and B.
-    public double maxTireGrip = 0.8 * 9.81; // this is in ms^-2. Taken from caranddriver.com.
-    public double maxAccelB = 10.6264; // This is a linear approximation for the car's acceleration, which decreases as speed goes up. A = MV + B.
-    public double maxAccelM = -0.03892;
-    // braking strength is generally constant.
-    public double maxBrake = 12.346;
-    // turning speed is higher in lighter cars like the Mazda RX7 and lower in heavier cars like BMW M5.
-    public double maxSpeed = 100; // max speed of the car
-    public double turnRadius = 11.5; // turning radius of the car
-
-
+    public double maxTireGrip, maxAccelB, maxAccelM, maxBrake, maxSpeed,turnRadius;
+    public int nextcheckpoint;
 
     public Image carImage;
     public Car(int carID){

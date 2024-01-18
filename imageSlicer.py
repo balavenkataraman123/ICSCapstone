@@ -5,6 +5,5 @@ pixels_per_meter = 50
 meters_per_image = 48
 overlap_per_image = 24
 
-print(trackimage.shape)
-
-
+ntimage = cv2.resize(trackimage, (4000, 1545*2),interpolation = cv2.INTER_LINEAR)
+cv2.imwrite("RaceTrack1.png", ntimage)

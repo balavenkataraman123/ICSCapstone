@@ -12,6 +12,7 @@ ICS Summative, Bala V, Darian Y, ICS4U 2024. LightSpeed racing game.
 import org.w3c.dom.NodeList;
 
 import java.awt.*;
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -20,6 +21,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
@@ -32,13 +34,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public static NodeList carList;
     public static NodeList trackList;
 
+    public double TLXmeters, TLYmeters;
 
     public Thread gameThread;
     public Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
-
-    public Image image = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance((int) (8000 * scaleMultiplier), (int) (8000 * scaleMultiplier), Image.SCALE_DEFAULT); // Hard coded track image for now. Will use racetrack class when complete
-
-    public Image minimap = Toolkit.getDefaultToolkit().createImage("raceTrack.png").getScaledInstance((int) (200 * scaleMultiplier), (int) (200 * scaleMultiplier), Image.SCALE_DEFAULT); // minimap, smaller scaled version of main image. feature disabled due to graphical glitches, to be fixed soon.
+    public Image image;
+    public Image minimap;
 
     public Clip introSong; // Audio file to play start screen music.
 
@@ -50,12 +51,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public boolean gameRunning = false;
 
-    public int chosencarID = 0;
+    public int chosencarID = 2;
 
     public int chosentrackID = 0;
 
-    public int lastimagex = 999999;
-    public int lastimagey = 999999;
     public int[] nextcheckpoint;
 
 
@@ -65,7 +64,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         AudioInputStream audioStream;
         try{
             carList = XMLReader.readXMLDocumentFromFile("cars.XML").getElementsByTagName("car");
-            trackList = XMLReader.readXMLDocumentFromFile("tracks.XML").getElementsByTagName("track");
+            //trackList = XMLReader.readXMLDocumentFromFile("tracks.XML").getElementsByTagName("track");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -98,25 +97,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         gameThread.start();
     }
     public void paintGame(Graphics g){ // paint class, for if the game is running
+        boolean imChanged;
         Graphics2D g2d = (Graphics2D) g;
-        int centerx = (int) (player.centerX * pixelsPerMeter + 0.5); // location of the car on the track in pixels instead of meters.
-        int centery = (int) (player.centerY * pixelsPerMeter + 0.5);
+        imChanged = raceTrack.getCurrentTrackSegment(player.centerX, player.centerY);
+        if(imChanged){
+            TLXmeters = Math.max(0, player.centerX - 24);
+            TLYmeters = Math.max(0, player.centerY - 24);
+        }
 
-        AffineTransform affineTransform = AffineTransform.getTranslateInstance((600*scaleMultiplier - centerx), (900*scaleMultiplier - centery)); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
-        affineTransform.rotate(-player.carAngle, centerx, centery);// applies a rotational matrix transformation on the track image so it turns along with the car.
-
-
-       // try{/
-        //    image =
-
-  //      }
-
-        g2d.drawImage(image, affineTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
-
+        AffineTransform affineTransform = AffineTransform.getTranslateInstance((600*scaleMultiplier - pixelsPerMeter*(player.centerX - TLXmeters)), (900*scaleMultiplier - pixelsPerMeter*(player.centerY - TLYmeters))); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
+        affineTransform.rotate(-player.carAngle, pixelsPerMeter*(player.centerX - TLXmeters), pixelsPerMeter*(player.centerY - TLYmeters));// applies a rotational matrix transformation on the track image so it turns along with the car.
+        g2d.drawImage(raceTrack.imCache, affineTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
         // code which draws the mini map. might not work well when scale is changed. need to fix, so its commented.
         g2d.drawImage(minimap, (int) (20*scaleMultiplier),(int)(880 * scaleMultiplier),null);
         g2d.setColor(Color.black);
-        g2d.fillOval(centerx/40 + (int) (20*scaleMultiplier) - 5,  centery/40 + (int) (880*scaleMultiplier) - 5,10,10); // draws the car on the map
+        g2d.fillOval( (int)((player.centerX / raceTrack.trWidth) * 200 * scaleMultiplier +  (20*scaleMultiplier) - 5),  (int)((player.centerY / raceTrack.trHeight) * 200 * scaleMultiplier +  (880*scaleMultiplier) - 5),10,10); // draws the car on the map
         // draws text UI elements
         g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
         //g2d.drawString("Minimap", 20,850);
@@ -155,6 +150,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public void move(){ // updates the car position
         if(gameRunning) {
             player.move();
+            raceTrack.onTrack(player.centerX,player.centerY, player.carAngle);
         }
     }
 
@@ -184,20 +180,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         }
     }
     public void startGame(){
-        gameRunning = true;  // starts the game and stops the music when space is pressed.
-        player = new RaceCompetitor(20, 80,new Car(chosencarID));
+        player = new RaceCompetitor(273, 142,new Car(chosencarID));
         try {
-            raceTrack = new RaceTrack("deeznuts.png");
+            raceTrack = new RaceTrack("RaceTrack1");
+            minimap = raceTrack.getMiniMap();
         }
         catch(Exception e){
             e.printStackTrace();
             System.out.println("Could not load the race track file. ");
             System.exit(1);
-
         }
         if(musicWorks){
             introSong.stop();
         }
+        gameRunning = true;  // starts the game and stops the music when space is pressed.
+
     }
 
     //if a key is pressed, we'll send it over to the PlayerBall class for processing
