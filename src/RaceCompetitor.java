@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class RaceCompetitor extends Rectangle{
     public final boolean FILE_WRITING = true;
     public String trackingFilePath = "";
-    // car dimensions are rounded up to nearest
+    // variables for the car physics
 
     public Car raceCar;
 
@@ -25,10 +25,10 @@ public class RaceCompetitor extends Rectangle{
     public boolean reverseGearEngaged = false;
 
     public int numCH = 0;
-    public double lastCHX = 99999;
+    public double lastCHX = 99999; // checkpoint location
     public double lastCHY = 99999;
     public PrintWriter out;
-    public ArrayList<String> ghostCoords = new ArrayList<>();
+    public ArrayList<String> ghostCoords = new ArrayList<>(); // location log, as you become the new ghost if you beat it.
 
 
 
@@ -41,8 +41,8 @@ public class RaceCompetitor extends Rectangle{
         centerX = x;
         centerY = y;
         carAngle = inpCarAngle;
-        ghostCoords.add(carID + "\n");
-        trackingFilePath = chosenTrack + "_Ghost.txt";
+        ghostCoords.add(carID + "\n"); // logs the car you have.
+        trackingFilePath = chosenTrack + "_Ghost.txt"; // sets up "ghost" file. You become the new ghost if you beat it.
     }
 
     //called from GamePanel when any keyboard input is detected
@@ -105,9 +105,9 @@ public class RaceCompetitor extends Rectangle{
         }
         centerX += xVelocity * (1.0/60); // updates positioning of the car.
         centerY += yVelocity * (1.0/60);
-        ghostCoords.add(centerX + " " + centerY + " " + carAngle + "\n");
+        ghostCoords.add(centerX + " " + centerY + " " + carAngle + "\n"); // location logging
     }
-    public void verifyCheckPoint(){
+    public void verifyCheckPoint(){ // checks if the car is at a checkpoint
         if(Math.max (Math.abs(centerY - lastCHY), Math.abs(centerX - lastCHX)) >= 20){
             numCH += 1;
             lastCHX = centerX;
@@ -115,12 +115,13 @@ public class RaceCompetitor extends Rectangle{
         }
 
     }
-    public void bounce(int crashes){
+    public void bounce(int crashes){ // bounces the car off the wall if it crashes.
         if (crashes != 0){
             if(reverseGearEngaged){
                 forwardSpeed = -forwardSpeed;
             }
         }
+        // checks the directions the car has been hit from.
         if((crashes & 3) != 0){
             System.out.println("Front");
             centerX -= Math.sin(carAngle) * forwardSpeed / 30;
@@ -149,14 +150,14 @@ public class RaceCompetitor extends Rectangle{
 
     //called frequently from the GamePanel class
     //draws the current location of the car to the screen
-    public void draw(Graphics2D g){ // draws car at center location on screen.
+    public void draw(Graphics2D g){ // draws car at center location on screeaaaan.
         g.drawImage(raceCar.carImage,(int) (600 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (900 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), null);
     }
-    public void writeCoords(){
-        File file = new File(trackingFilePath);
+    public void writeCoords(){ // if you do better than the ghost, you become the ghost.
+        File file = new File(trackingFilePath); // this function writes your position and direction throughout the race to a file.
         if(FILE_WRITING){
             try{
-                file.delete();
+                file.delete(); // clears old file, and writes it in separate lines.
                 out = new PrintWriter(trackingFilePath);
                 for(String e : ghostCoords){
                     out.write(e);
