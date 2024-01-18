@@ -24,6 +24,8 @@ public class RaceCompetitor extends Rectangle{
     public double carTurndir = 0;
     public boolean reverseGearEngaged = false;
 
+    public double health = 100;
+
     public int numCH = 0;
     public double lastCHX = 99999; // checkpoint location
     public double lastCHY = 99999;
@@ -116,35 +118,31 @@ public class RaceCompetitor extends Rectangle{
 
     }
     public void bounce(int crashes){ // bounces the car off the wall if it crashes.
-        if (crashes != 0){
-            if(reverseGearEngaged){
-                forwardSpeed = -forwardSpeed;
-            }
-        }
+
         // checks the directions the car has been hit from.
-        if((crashes & 3) != 0){
-            System.out.println("Front");
+        // front right and front left: stops fully.
+        // front right: deflected to the left.
+        if((crashes & 3) == 3){
+            System.out.println("Full Frontal");
             centerX -= Math.sin(carAngle) * forwardSpeed / 30;
             centerY += Math.cos(carAngle) * forwardSpeed / 30;
             forwardSpeed = 0;
         }
-        if((crashes & 9) != 0){
-            System.out.println("Left");
-            centerX -= Math.cos(carAngle) * forwardSpeed / 30;
-            centerY += Math.sin(carAngle) * forwardSpeed /30;
-            forwardSpeed = 0;
+        else if((crashes & 1) != 0){
+            System.out.println("Front Left");
+            carAngle += 0.2;
+            centerX -= Math.sin(carAngle) * forwardSpeed / 30;
+            centerY += Math.cos(carAngle) * forwardSpeed / 30;
+            health -= forwardSpeed;
+            forwardSpeed = Math.pow(forwardSpeed, 0.7);
         }
-        if((crashes & 12) != 0){
-            System.out.println("back");
-            centerX += Math.sin(carAngle) * forwardSpeed / 30;
-            centerY -= Math.cos(carAngle) * forwardSpeed / 30;
-            forwardSpeed = 0;
-        }
-        if((crashes & 6) != 0){
-            System.out.println("Right");
-            centerX += Math.cos(carAngle) * forwardSpeed / 30;
-            centerY -= Math.sin(carAngle) * forwardSpeed / 30;
-            forwardSpeed = 0;
+        else if((crashes & 2) != 0){
+            System.out.println("Front Right");
+            carAngle -= 0.2;
+            centerX -= Math.sin(carAngle) * forwardSpeed / 30;
+            centerY += Math.cos(carAngle) * forwardSpeed / 30;
+            health -= forwardSpeed;
+            forwardSpeed = Math.pow(forwardSpeed, 0.7);
         }
     }
 

@@ -51,7 +51,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public int chosencarID = 1;
 
-    public String chosenTrack = "RaceTrack3";
+    public String chosenTrack = "RaceTrack2w";
 
     public GamePanel(){
         // the function to start the game
@@ -220,7 +220,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             e.printStackTrace();
             System.out.println("Could not load the race track file. ");
             System.exit(1);
-        }
+            }
         player = new RaceCompetitor(raceTrack.sx, raceTrack.sy, raceTrack.sa, chosencarID, chosenTrack);
         ghost = new GhostRider(chosenTrack + "_Ghost.txt");
         if(musicWorks){
