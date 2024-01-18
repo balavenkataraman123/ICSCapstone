@@ -97,17 +97,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         gameThread.start();
     }
     public void paintGame(Graphics g){ // paint class, for if the game is running
+        AffineTransform mapTransform;
         boolean imChanged;
         Graphics2D g2d = (Graphics2D) g;
         imChanged = raceTrack.getCurrentTrackSegment(player.centerX, player.centerY);
+
         if(imChanged){
             TLXmeters = Math.max(0, player.centerX - 24);
             TLYmeters = Math.max(0, player.centerY - 24);
         }
 
-        AffineTransform affineTransform = AffineTransform.getTranslateInstance((600*scaleMultiplier - pixelsPerMeter*(player.centerX - TLXmeters)), (900*scaleMultiplier - pixelsPerMeter*(player.centerY - TLYmeters))); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
-        affineTransform.rotate(-player.carAngle, pixelsPerMeter*(player.centerX - TLXmeters), pixelsPerMeter*(player.centerY - TLYmeters));// applies a rotational matrix transformation on the track image so it turns along with the car.
-        g2d.drawImage(raceTrack.imCache, affineTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
+        mapTransform = AffineTransform.getTranslateInstance((600*scaleMultiplier - pixelsPerMeter*(player.centerX - TLXmeters)), (900*scaleMultiplier - pixelsPerMeter*(player.centerY - TLYmeters))); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
+        mapTransform.rotate(-player.carAngle, pixelsPerMeter*(player.centerX - TLXmeters), pixelsPerMeter*(player.centerY - TLYmeters));// applies a rotational matrix transformation on the track image so it turns along with the car.
+        g2d.drawImage(raceTrack.imCache, mapTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
         // code which draws the mini map. might not work well when scale is changed. need to fix, so its commented.
         g2d.drawImage(minimap, (int) (20*scaleMultiplier),(int)(880 * scaleMultiplier),null);
         g2d.setColor(Color.black);
@@ -117,6 +119,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         //g2d.drawString("Minimap", 20,850);
         g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1180*scaleMultiplier));
         g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2) + "mph",20,20);
+
+
+
         player.draw(g2d);
         raceTrack.checkPositions(player);
     }
@@ -183,7 +188,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         }
     }
     public void startGame(){
-        player = new RaceCompetitor(273, 142,new Car(chosencarID));
+        player = new RaceCompetitor(273, 142, 1.2,new Car(chosencarID));
         try {
             raceTrack = new RaceTrack("RaceTrack1");
             minimap = raceTrack.getMiniMap();
