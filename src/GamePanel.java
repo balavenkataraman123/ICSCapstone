@@ -22,7 +22,7 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
-    public static double scaleMultiplier = 1; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
+    public static double scaleMultiplier = 1 ; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
 
     //dimensions of window
     public static final int GAME_WIDTH = (int) (1200 * scaleMultiplier); // game resolution
