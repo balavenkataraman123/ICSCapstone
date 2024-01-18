@@ -1,0 +1,7 @@
+420
+1328
+636
+1.22
+8
+Data format: height, starting x, starting y, starting angle.
+

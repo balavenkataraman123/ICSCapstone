@@ -1,0 +1,7 @@
+420
+762
+1130
+0.80
+6
+Data format: height, starting x, starting y, starting angle, num. checkpoints
+
