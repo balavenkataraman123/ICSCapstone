@@ -4,9 +4,14 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static java.lang.Float.parseFloat;
+import static java.lang.Integer.parseInt;
 
 public class RaceTrack {
     public ArrayList<ArrayList<Image>> TrackTopDown;
@@ -17,20 +22,31 @@ public class RaceTrack {
     double last_segment_x = 9999;
     double last_segment_y = 9999;
 
+    public double sx, sy, sa;
+
     public Image imCache;
     public int imheight, imwidth;
-
+    public int numCheckpoints;
     public double trHeight, trWidth;
     public RaceTrack(String trackPath) throws IOException {
         File imageFile;
         fullImagePath = trackPath + ".png";
         imageFile = new File(fullImagePath);
+        BufferedReader reader = new BufferedReader(new FileReader(trackPath + ".txt"));
+        trHeight = parseFloat(reader.readLine());
+
+
         fullImage = ImageIO.read(imageFile);
         imheight = fullImage.getHeight(null);
         imwidth = fullImage.getWidth(null);
-        trHeight = 330;
         mapPPM =  imheight / trHeight;
         trWidth = imwidth/ mapPPM;
+        sx = 2*parseFloat(reader.readLine()) / mapPPM;
+        sy = 2*parseFloat(reader.readLine()) / mapPPM;
+        sa = parseFloat(reader.readLine());
+        System.out.println(sx + " " + sy + " " + sa);
+        numCheckpoints = parseInt(reader.readLine());
+        reader.close();
     }
     // plans
     // break the track up into segments, with each of them being 200 x 200 m. Supersample images on demand. If the image location is same as previous, return zero. otherwise, return the image.
@@ -54,7 +70,7 @@ public class RaceTrack {
         return false;
     }
     // collision detection function
-    public int onTrack(double centerX, double centerY, double carAngle){
+    public int HasCrashed(double centerX, double centerY, double carAngle){
         double[]corners_x = {- 1,  1, 1,  -1};
         double[]corners_y = {-2.5, -2.5, 2.5, 2.5};
         double caSin = Math.sin(carAngle);
@@ -79,7 +95,16 @@ public class RaceTrack {
             }
         }
         return crashes;
-
+    }
+    public boolean PassedCheckpoint(double centerX, double centerY){
+        int color = fullImage.getRGB((int) (centerX * mapPPM), (int) (centerY * mapPPM)); // gets map color and RGB values
+        int blue = color & 0xff;
+        int green = (color & 0xff00) >> 8;
+        int red = (color & 0xff0000) >> 16;
+        if(red+blue+green >= 650){
+            return  true;
+        }
+        return false;
     }
     public Image getMiniMap(){
         return Toolkit.getDefaultToolkit().createImage(fullImagePath).getScaledInstance((int) (200 * GamePanel.scaleMultiplier), (int) (200 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);

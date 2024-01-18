@@ -12,7 +12,6 @@ ICS Summative, Bala V, Darian Y, ICS4U 2024. LightSpeed racing game.
 import org.w3c.dom.NodeList;
 
 import java.awt.*;
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -20,8 +19,6 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
@@ -38,7 +35,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public Thread gameThread;
     public Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
-    public Image image;
     public Image minimap;
 
     public Clip introSong; // Audio file to play start screen music.
@@ -47,16 +43,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public RaceCompetitor player; // player object
 
+    public GhostRider ghost;
+
     public RaceTrack raceTrack; // racetrack object
 
     public boolean gameRunning = false;
 
-    public int chosencarID = 2;
+    public int chosencarID = 1;
 
-    public int chosentrackID = 0;
-
-    public int[] nextcheckpoint;
-
+    public String chosenTrack = "RaceTrack3";
 
     public GamePanel(){
         // the function to start the game
@@ -98,6 +93,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     }
     public void paintGame(Graphics g){ // paint class, for if the game is running
         AffineTransform mapTransform;
+        AffineTransform ghostTransform;
+
         boolean imChanged;
         Graphics2D g2d = (Graphics2D) g;
         imChanged = raceTrack.getCurrentTrackSegment(player.centerX, player.centerY);
@@ -107,14 +104,26 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             TLYmeters = Math.max(0, player.centerY - 24);
         }
 
+        double gcx = 600*scaleMultiplier + (ghost.centerX - player.centerX) * pixelsPerMeter;
+        double gcy = 900*scaleMultiplier + (ghost.centerY - player.centerY) * pixelsPerMeter;
+        ghostTransform = AffineTransform.getTranslateInstance(gcx,gcy);
         mapTransform = AffineTransform.getTranslateInstance((600*scaleMultiplier - pixelsPerMeter*(player.centerX - TLXmeters)), (900*scaleMultiplier - pixelsPerMeter*(player.centerY - TLYmeters))); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
         mapTransform.rotate(-player.carAngle, pixelsPerMeter*(player.centerX - TLXmeters), pixelsPerMeter*(player.centerY - TLYmeters));// applies a rotational matrix transformation on the track image so it turns along with the car.
+        ghostTransform.rotate(-player.carAngle, pixelsPerMeter*(player.centerX - ghost.centerX),pixelsPerMeter*(player.centerY - ghost.centerY));// applies a rotational matrix transformation on the track image so it turns along with the car.
+        ghostTransform.rotate(ghost.carAngle);
         g2d.drawImage(raceTrack.imCache, mapTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
+        g2d.drawImage(ghost.carImg, ghostTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
+
         // code which draws the mini map. might not work well when scale is changed. need to fix, so its commented.
         g2d.drawImage(minimap, (int) (20*scaleMultiplier),(int)(880 * scaleMultiplier),null);
         g2d.setColor(Color.black);
         g2d.fillOval( (int)((player.centerX / raceTrack.trWidth) * 200 * scaleMultiplier +  (20*scaleMultiplier) - 5),  (int)((player.centerY / raceTrack.trHeight) * 200 * scaleMultiplier +  (880*scaleMultiplier) - 5),10,10); // draws the car on the map
+        g2d.setColor(Color.white);
+
+        g2d.fillOval( (int)((ghost.centerX / raceTrack.trWidth) * 200 * scaleMultiplier +  (20*scaleMultiplier) - 5),  (int)((ghost.centerY / raceTrack.trHeight) * 200 * scaleMultiplier +  (880*scaleMultiplier) - 5),10,10); // draws the car on the map
+
         // draws text UI elements
+
         g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
         //g2d.drawString("Minimap", 20,850);
         g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1180*scaleMultiplier));
@@ -156,9 +165,24 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         int crashes;
         if(gameRunning) {
             player.move();
-            crashes = raceTrack.onTrack(player.centerX,player.centerY, player.carAngle);
+            ghost.move();
+            crashes = raceTrack.HasCrashed(player.centerX,player.centerY, player.carAngle);
             player.bounce(crashes);
+            if(raceTrack.PassedCheckpoint(player.centerX, player.centerY)){
+                player.verifyCheckPoint();
 
+                if(player.numCH > raceTrack.numCheckpoints){
+                    if(ghost.finished_race){
+                        System.out.println("You finished the race. Ghost wins");
+                        System.exit(0);
+                    }
+                    else{
+                        System.out.println("You finished the race. You win.");
+                        player.writeCoords();
+                        System.exit(0);
+                    }
+                }
+            }
         }
     }
 
@@ -187,10 +211,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             }
         }
     }
-    public void startGame(){
-        player = new RaceCompetitor(273, 142, 1.2,new Car(chosencarID));
+    public void startGame(){ // to do: add comments. Also, the ghost rider picks a random file for that given track. These files are recorded by other players.
         try {
-            raceTrack = new RaceTrack("RaceTrack1");
+            raceTrack = new RaceTrack(chosenTrack);
             minimap = raceTrack.getMiniMap();
         }
         catch(Exception e){
@@ -198,6 +221,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             System.out.println("Could not load the race track file. ");
             System.exit(1);
         }
+        player = new RaceCompetitor(raceTrack.sx, raceTrack.sy, raceTrack.sa, chosencarID, chosenTrack);
+        ghost = new GhostRider(chosenTrack + "_Ghost.txt");
         if(musicWorks){
             introSong.stop();
         }

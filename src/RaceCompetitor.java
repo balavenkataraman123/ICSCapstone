@@ -3,11 +3,14 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class RaceCompetitor extends Rectangle{
     public final boolean FILE_WRITING = true;
-    public final String TRACKINGFILEPATH = "bala_v_rt1_firstdrive.txt";
+    public String trackingFilePath = "";
     // car dimensions are rounded up to nearest
 
     public Car raceCar;
@@ -15,45 +18,41 @@ public class RaceCompetitor extends Rectangle{
     public int acceldir = 0;
     public double carAngle = 0;
     public double forwardSpeed = 0;
-    public double AngularVelocity = 0; // degrees per frame. Turning speed is set for each car.
     public double centerX;
     public double centerY;
 
-    public double carTurnSpeed = 0;
+    public double carTurndir = 0;
     public boolean reverseGearEngaged = false;
 
-    public int numCH;
-    public double nextCHX;
-    public double nextCHY;
+    public int numCH = 0;
+    public double lastCHX = 99999;
+    public double lastCHY = 99999;
     public PrintWriter out;
+    public ArrayList<String> ghostCoords = new ArrayList<>();
 
 
 
 
 
     //constructor creates car at given location with given dimensions
-    public RaceCompetitor(int x, int y, double inpCarAngle, Car currentCar){
-        super(x, y, currentCar.CAR_LENGTH, currentCar.CAR_WIDTH);
-        raceCar =  currentCar; // saves car's data
+    public RaceCompetitor(double x, double y, double inpCarAngle, int carID, String chosenTrack){
+        super((int) x, (int) y, 2,5);
+        raceCar = new Car(carID); // saves car's data
         centerX = x;
         centerY = y;
         carAngle = inpCarAngle;
-        if(FILE_WRITING){
-            try{
-                out = new PrintWriter(TRACKINGFILEPATH);
-            }
-            catch(Exception e){}
-        }
+        ghostCoords.add(carID + "\n");
+        trackingFilePath = chosenTrack + "_Ghost.txt";
     }
 
     //called from GamePanel when any keyboard input is detected
     //updates the position of the car based on user input
     public void keyPressed(KeyEvent e){
         if(e.getKeyChar() == 'd'){// sets turning speed and direction
-            carTurnSpeed = raceCar.calculateAngularVelocity(forwardSpeed);
+            carTurndir = 1;
         }
         if(e.getKeyChar() == 'a'){
-            carTurnSpeed  = -raceCar.calculateAngularVelocity(forwardSpeed);
+            carTurndir = -1;
         }
         if(e.getKeyChar() == 'w'){ // sets direction of acceleration when w or s is pressed
             acceldir = 1;
@@ -79,14 +78,11 @@ public class RaceCompetitor extends Rectangle{
             acceldir = 0;
         }
         if(e.getKeyChar() == 'a'){
-            carTurnSpeed = 0;
+            carTurndir = 0;
         }
 
         if(e.getKeyChar() == 'd'){
-            carTurnSpeed = 0;
-        }
-        if(e.getKeyChar() == 'p'){
-            endRace();
+            carTurndir = 0;
         }
     }
 
@@ -96,7 +92,7 @@ public class RaceCompetitor extends Rectangle{
         double xVelocity;
         double yVelocity;
 
-        carAngle += carTurnSpeed * (1.0/60); // turns the car.
+        carAngle += carTurndir * raceCar.calculateAngularVelocity(forwardSpeed) * (1.0/60); // turns the car.
         forwardSpeed = Math.max(0, Math.min(raceCar.maxSpeed, forwardSpeed + acceldir *raceCar.calculateAcceleration(acceldir, forwardSpeed))); // changes velocity by acceleration
         // Sets the velocity components based on speed and direction
         if(reverseGearEngaged){ // sets velocity in forward or reverse depending on reverse gear.
@@ -109,10 +105,14 @@ public class RaceCompetitor extends Rectangle{
         }
         centerX += xVelocity * (1.0/60); // updates positioning of the car.
         centerY += yVelocity * (1.0/60);
-        try{
-            out.write(centerX + " " + centerY + " " + carAngle + "\n");
+        ghostCoords.add(centerX + " " + centerY + " " + carAngle + "\n");
+    }
+    public void verifyCheckPoint(){
+        if(Math.max (Math.abs(centerY - lastCHY), Math.abs(centerX - lastCHX)) >= 20){
+            numCH += 1;
+            lastCHX = centerX;
+            lastCHY = centerY;
         }
-        catch (Exception e){}
 
     }
     public void bounce(int crashes){
@@ -152,8 +152,22 @@ public class RaceCompetitor extends Rectangle{
     public void draw(Graphics2D g){ // draws car at center location on screen.
         g.drawImage(raceCar.carImage,(int) (600 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (900 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), null);
     }
-    public void endRace(){
-        out.close();
+    public void writeCoords(){
+        File file = new File(trackingFilePath);
+        if(FILE_WRITING){
+            try{
+                file.delete();
+                out = new PrintWriter(trackingFilePath);
+                for(String e : ghostCoords){
+                    out.write(e);
+                }
+                out.close();
+
+
+            }
+            catch(Exception e){}
+        }
+
     }
 
 }
