@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a416c2cb-8678-4a49-9539-ba0f303d966e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/BlazeDashGame.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazeDashGame.iml" beforeDir="false" afterPath="$PROJECT_DIR$/BlazeDashGame.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RaceTrack1_Ghost.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RaceTrack2_Ghost.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RaceTrack3_Ghost.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nissan.png" beforeDir="false" afterPath="$PROJECT_DIR$/nissan.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RaceCompetitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RaceCompetitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RaceTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RaceTrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/BMW.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/Car.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/GameFrame.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/GamePanel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/GhostRider.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceCompetitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack1_Ghost.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack2_Ghost.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack3.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/RaceTrack3_Ghost.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/UML diagram for racing game Bala and Darian.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/Work Log Bala and Darian.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/XMLReader.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/cars.XML" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/corvette.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/mercedes.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/nissan.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/runMe.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/splashscreen.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/toSubmit/tokyodriftsong.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tokyodriftsong.wav" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="2bFEFhgiJlxzt0sttOQH92sl1VL" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="BlazeDashGame" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a416c2cb-8678-4a49-9539-ba0f303d966e" name="Changes" comment="" />
+      <created>1705802325846</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1705802325846</updated>
+      <workItem from="1705802327903" duration="6551000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
