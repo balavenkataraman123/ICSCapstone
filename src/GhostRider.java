@@ -15,6 +15,7 @@ public class GhostRider extends Rectangle{
     public double centerX, centerY, carAngle;
     public Image carImg;
     public boolean finished_race = false; // determines whether player or ghost wins.
+
     public GhostRider(String filePath){
         try { // draws the car frame-by-frame at the coordinates it was at.
             reader = new BufferedReader(new FileReader(filePath));

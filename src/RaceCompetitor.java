@@ -35,7 +35,6 @@ public class RaceCompetitor extends Rectangle{
 
 
 
-
     //constructor creates car at given location with given dimensions
     public RaceCompetitor(double x, double y, double inpCarAngle, int carID, String chosenTrack){
         super((int) x, (int) y, 2,5);
@@ -61,6 +60,9 @@ public class RaceCompetitor extends Rectangle{
         }
         if(e.getKeyChar() == 's'){
             acceldir = -1;
+            if(Math.abs(carTurndir) == 1) {
+                carTurndir *= 1.25;
+            }
         }
         if(e.getKeyChar() == 'r'){ // switches direction of the car, but only if the car is stopped.
             if(forwardSpeed == 0){
@@ -122,33 +124,62 @@ public class RaceCompetitor extends Rectangle{
         // checks the directions the car has been hit from.
         // front right and front left: stops fully.
         // front right: deflected to the left.
-        if((crashes & 3) == 3){
-            System.out.println("Full Frontal");
-            centerX -= Math.sin(carAngle) * forwardSpeed / 30;
-            centerY += Math.cos(carAngle) * forwardSpeed / 30;
-            forwardSpeed = 0;
+        if(!reverseGearEngaged){
+            if((crashes & 3) == 3){
+                System.out.println("Full Frontal");
+                centerX -= Math.sin(carAngle) * forwardSpeed / 30;
+                centerY += Math.cos(carAngle) * forwardSpeed / 30;
+                forwardSpeed = 0;
+                health -= forwardSpeed;
+            }
+            else if((crashes & 1) != 0){
+                System.out.println("Front Left");
+                carAngle += 0.2;
+                centerX -= Math.sin(carAngle) * forwardSpeed / 30;
+                centerY += Math.cos(carAngle) * forwardSpeed / 30;
+                health -= forwardSpeed * 0.5;
+                forwardSpeed = Math.pow(forwardSpeed, 0.7);
+            }
+            else if((crashes & 2) != 0){
+                System.out.println("Front Right");
+                carAngle -= 0.2;
+                centerX -= Math.sin(carAngle) * forwardSpeed / 30;
+                centerY += Math.cos(carAngle) * forwardSpeed / 30;
+                health -= forwardSpeed * 0.5;
+                forwardSpeed = Math.pow(forwardSpeed, 0.7);
+            }
         }
-        else if((crashes & 1) != 0){
-            System.out.println("Front Left");
-            carAngle += 0.2;
-            centerX -= Math.sin(carAngle) * forwardSpeed / 30;
-            centerY += Math.cos(carAngle) * forwardSpeed / 30;
-            health -= forwardSpeed;
-            forwardSpeed = Math.pow(forwardSpeed, 0.7);
-        }
-        else if((crashes & 2) != 0){
-            System.out.println("Front Right");
-            carAngle -= 0.2;
-            centerX -= Math.sin(carAngle) * forwardSpeed / 30;
-            centerY += Math.cos(carAngle) * forwardSpeed / 30;
-            health -= forwardSpeed;
-            forwardSpeed = Math.pow(forwardSpeed, 0.7);
+        else{
+            if((crashes & 12) == 12){
+                System.out.println("Full Rear");
+                centerX += Math.sin(carAngle) * forwardSpeed / 30;
+                centerY -= Math.cos(carAngle) * forwardSpeed / 30;
+                forwardSpeed = 0;
+                health -= forwardSpeed;
+
+            }
+            else if((crashes & 4) != 0){
+                System.out.println("Back Right");
+                carAngle += 0.2;
+                centerX += Math.sin(carAngle) * forwardSpeed / 30;
+                centerY -= Math.cos(carAngle) * forwardSpeed / 30;
+                health -= forwardSpeed * 0.5;
+                forwardSpeed = Math.pow(forwardSpeed, 0.7);
+            }
+            else if((crashes & 8) != 0){
+                System.out.println("Back Left");
+                carAngle -= 0.2;
+                centerX += Math.sin(carAngle) * forwardSpeed / 30;
+                centerY -= Math.cos(carAngle) * forwardSpeed / 30;
+                health -= forwardSpeed * 0.5;
+                forwardSpeed = Math.pow(forwardSpeed, 0.7);
+            }
         }
     }
 
     //called frequently from the GamePanel class
     //draws the current location of the car to the screen
-    public void draw(Graphics2D g){ // draws car at center location on screeaaaan.
+    public void draw(Graphics2D g){ // draws car at center location on screean.
         g.drawImage(raceCar.carImage,(int) (600 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (900 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), null);
     }
     public void writeCoords(){ // if you do better than the ghost, you become the ghost.

@@ -20,6 +20,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.io.File;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
     public static double scaleMultiplier = 1 ; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
@@ -29,12 +30,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public static final int GAME_HEIGHT = (int) ( 1200 * scaleMultiplier);
     public static int pixelsPerMeter = (int) (50 * scaleMultiplier); // display scaling
     public static NodeList carList;
-    public static NodeList trackList;
+    public static ArrayList trackList;
+    public static int gameRunning = 0;
 
+    public static int chosencarID = 1;
+
+    public static int chosenTrackIndex = 0;
+    public static String chosenTrack = "RaceTrack3";
+    public static String endScreenMessage = "";
     public double TLXmeters, TLYmeters;
 
     public Thread gameThread;
-    public Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
+    public static Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
     public Image minimap;
 
     public Clip introSong; // Audio file to play start screen music.
@@ -47,23 +54,30 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public RaceTrack raceTrack; // racetrack object
 
-    public boolean gameRunning = false;
-
-    public int chosencarID = 1;
-
-    public String chosenTrack = "RaceTrack2w";
+    public GameUI gui = new GameUI();
 
     public GamePanel(){
+        File curDir =  new File(""); // set this file path.
         // the function to start the game
         File audioFile; // loads the game music
         AudioInputStream audioStream;
-        try{
+        String fname;
+
+        try{ // loads the car files and the track files.
             carList = XMLReader.readXMLDocumentFromFile("cars.XML").getElementsByTagName("car");
-            //trackList = XMLReader.readXMLDocumentFromFile("tracks.XML").getElementsByTagName("track");
+            // reads all the files in the track directory.
+            for(File f : curDir.listFiles()){
+                if(f.isFile()){
+                    fname = f.getName();
+                    if(fname.endsWith(".txt") && !fname.endsWith("Ghost.txt")){ // reads any text file in the working directory which is not a path log file. These are track files.
+                        trackList.add(fname.substring(0,fname.length() - 4)); // Stores the names of the tracks.
+                    }
+                }
+            }
         }
         catch(Exception e){
             e.printStackTrace();
-            System.out.println("failed to load car data. closing program");
+            System.out.println("failed to load car/or track data. closing program");
             System.exit(1);
         }
         try{ // tries to load an audio file
@@ -127,7 +141,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
         //g2d.drawString("Minimap", 20,850);
         g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1180*scaleMultiplier));
-        g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2) + "mph",20,20);
+        g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2 * 1.61) + "kmph",20,20);
+        g2d.drawString("Remaining car health: " + (int) player.health + "%",20,60);
+        g2d.drawString("Remaining checkpoints: " + (raceTrack.numCheckpoints - player.numCH),20,100);
+
+
 
 
 
@@ -136,21 +154,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     }
 
     public void paintSplashScreen(Graphics g){ // draws the pre game UI
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(splashScreenBG, 0,0,null);
-        g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
-        // displays information text
-        g2d.drawString("Press space to play. UI not complete yet. ", (int) (500*scaleMultiplier), (int) (1090*scaleMultiplier));
-        g2d.drawString("And yes, this is a photoshopped version of the Tokyo Drift movie poster. ", (int) (250*scaleMultiplier), (int) (1120*scaleMultiplier));
-        g2d.drawString("Song is from the movie as well. Both subject to change.", (int) (250*scaleMultiplier), (int) (1150*scaleMultiplier));
-        g2d.drawString("W: gas. S:brake; A,S: Steering. R: toggle reverse gear", (int) (250*scaleMultiplier), (int) (1180*scaleMultiplier));
+        //gui.configure(gameRunning);;
+        gui.draw(g);
 
 
     }
 
     //paint is a method in java.awt library that we are overriding. It is a special method - it is called automatically in the background in order to update what appears in the window. You NEVER call paint() yourself
     public void paint(Graphics g){ // will call different paint functions depending on whether the game is running or not.
-        if(gameRunning){
+        if(gameRunning == 3) {
+            startGame();
+        }
+        else if(gameRunning == 4){
             paintGame(g);
         }
         else{
@@ -163,24 +178,27 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     //this method is constantly called from run(). By doing this, movements appear fluid and natural. If we take this out the movements appear sluggish and laggy
     public void move(){ // updates the car position
         int crashes;
-        if(gameRunning) {
+        if(gameRunning == 4) {
             player.move();
             ghost.move();
             crashes = raceTrack.HasCrashed(player.centerX,player.centerY, player.carAngle);
             player.bounce(crashes);
+            if(player.health < 0){
+                endScreenMessage = "You totalled your car";
+                gameRunning = 5;
+            }
             if(raceTrack.PassedCheckpoint(player.centerX, player.centerY)){
                 player.verifyCheckPoint();
 
                 if(player.numCH > raceTrack.numCheckpoints){
                     if(ghost.finished_race){
-                        System.out.println("You finished the race. Ghost wins");
-                        System.exit(0);
+                        endScreenMessage = "You finished the race. Ghost wins";
                     }
                     else{
-                        System.out.println("You finished the race. You win.");
+                        endScreenMessage = "You finished the race, You win. You are now the ghost.";
                         player.writeCoords();
-                        System.exit(0);
                     }
+                    gameRunning = 5;
                 }
             }
         }
@@ -226,25 +244,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         if(musicWorks){
             introSong.stop();
         }
-        gameRunning = true;  // starts the game and stops the music when space is pressed.
+        gameRunning = 4;  // starts the game and stops the music when space is pressed.
 
     }
 
     //if a key is pressed, we'll send it over to the PlayerBall class for processing
     public void keyPressed(KeyEvent e){
-        if(gameRunning) {
+        if(gameRunning == 4) {
             player.keyPressed(e);
         }
         else{
-            if(e.getKeyCode()== 32){ // CHANGE THIS TO 49 FOR RUNNING ON MACOS
-                startGame();
-            }
+            gui.keyPressed(e);
         }
     }
 
     //if a key is released, we'll send it over to the PlayerBall class for processing
     public void keyReleased(KeyEvent e){
-        if(gameRunning) {
+        if(gameRunning == 4) {
             player.keyReleased(e);
         }
     }
