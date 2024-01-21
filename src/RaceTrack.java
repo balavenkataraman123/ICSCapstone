@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+
 
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
@@ -44,7 +44,6 @@ public class RaceTrack {
         sx = 2*parseFloat(reader.readLine()) / mapPPM;
         sy = 2*parseFloat(reader.readLine()) / mapPPM;
         sa = parseFloat(reader.readLine());
-        System.out.println(sx + " " + sy + " " + sa);
         numCheckpoints = parseInt(reader.readLine());
         reader.close();
     }

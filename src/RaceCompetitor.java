@@ -126,14 +126,12 @@ public class RaceCompetitor extends Rectangle{
         // front right: deflected to the left.
         if(!reverseGearEngaged){
             if((crashes & 3) == 3){
-                System.out.println("Full Frontal");
                 centerX -= Math.sin(carAngle) * forwardSpeed / 30;
                 centerY += Math.cos(carAngle) * forwardSpeed / 30;
                 forwardSpeed = 0;
                 health -= forwardSpeed;
             }
             else if((crashes & 1) != 0){
-                System.out.println("Front Left");
                 carAngle += 0.2;
                 centerX -= Math.sin(carAngle) * forwardSpeed / 30;
                 centerY += Math.cos(carAngle) * forwardSpeed / 30;
@@ -141,7 +139,6 @@ public class RaceCompetitor extends Rectangle{
                 forwardSpeed = Math.pow(forwardSpeed, 0.7);
             }
             else if((crashes & 2) != 0){
-                System.out.println("Front Right");
                 carAngle -= 0.2;
                 centerX -= Math.sin(carAngle) * forwardSpeed / 30;
                 centerY += Math.cos(carAngle) * forwardSpeed / 30;
@@ -151,7 +148,6 @@ public class RaceCompetitor extends Rectangle{
         }
         else{
             if((crashes & 12) == 12){
-                System.out.println("Full Rear");
                 centerX += Math.sin(carAngle) * forwardSpeed / 30;
                 centerY -= Math.cos(carAngle) * forwardSpeed / 30;
                 forwardSpeed = 0;
@@ -159,7 +155,6 @@ public class RaceCompetitor extends Rectangle{
 
             }
             else if((crashes & 4) != 0){
-                System.out.println("Back Right");
                 carAngle += 0.2;
                 centerX += Math.sin(carAngle) * forwardSpeed / 30;
                 centerY -= Math.cos(carAngle) * forwardSpeed / 30;
@@ -167,7 +162,6 @@ public class RaceCompetitor extends Rectangle{
                 forwardSpeed = Math.pow(forwardSpeed, 0.7);
             }
             else if((crashes & 8) != 0){
-                System.out.println("Back Left");
                 carAngle -= 0.2;
                 centerX += Math.sin(carAngle) * forwardSpeed / 30;
                 centerY -= Math.cos(carAngle) * forwardSpeed / 30;

@@ -30,13 +30,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public static final int GAME_HEIGHT = (int) ( 1200 * scaleMultiplier);
     public static int pixelsPerMeter = (int) (50 * scaleMultiplier); // display scaling
     public static NodeList carList;
-    public static ArrayList trackList;
+    public static ArrayList<String> trackList = new ArrayList();
     public static int gameRunning = 0;
-
     public static int chosencarID = 1;
 
     public static int chosenTrackIndex = 0;
-    public static String chosenTrack = "RaceTrack3";
+    public static String chosenTrack = "";
     public static String endScreenMessage = "";
     public double TLXmeters, TLYmeters;
 
@@ -57,7 +56,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     public GameUI gui = new GameUI();
 
     public GamePanel(){
-        File curDir =  new File(""); // set this file path.
+        File curDir =  new File("./"); // set this file path.
         // the function to start the game
         File audioFile; // loads the game music
         AudioInputStream audioStream;
@@ -67,11 +66,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             carList = XMLReader.readXMLDocumentFromFile("cars.XML").getElementsByTagName("car");
             // reads all the files in the track directory.
             for(File f : curDir.listFiles()){
-                if(f.isFile()){
-                    fname = f.getName();
-                    if(fname.endsWith(".txt") && !fname.endsWith("Ghost.txt")){ // reads any text file in the working directory which is not a path log file. These are track files.
-                        trackList.add(fname.substring(0,fname.length() - 4)); // Stores the names of the tracks.
-                    }
+                fname = f.getName();
+                if(fname.endsWith(".txt") && !fname.endsWith("Ghost.txt")){ // reads any text file in the working directory which is not a path log file. These are track files.
+                    trackList.add(fname.substring(0,fname.length() - 4)); // Stores the names of the tracks.
                 }
             }
         }
@@ -138,9 +135,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
         // draws text UI elements
 
-        g2d.setFont(new Font("Arial", Font.PLAIN, (int) (20*scaleMultiplier)));// sets text font
+        g2d.setFont(new Font("Arial", Font.PLAIN, (int) (30*scaleMultiplier)));// sets text font
         //g2d.drawString("Minimap", 20,850);
-        g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1180*scaleMultiplier));
+        g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1170*scaleMultiplier));
         g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2 * 1.61) + "kmph",20,20);
         g2d.drawString("Remaining car health: " + (int) player.health + "%",20,60);
         g2d.drawString("Remaining checkpoints: " + (raceTrack.numCheckpoints - player.numCH),20,100);
@@ -230,6 +227,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         }
     }
     public void startGame(){ // to do: add comments. Also, the ghost rider picks a random file for that given track. These files are recorded by other players.
+        chosenTrack = trackList.get(chosenTrackIndex);
         try {
             raceTrack = new RaceTrack(chosenTrack);
             minimap = raceTrack.getMiniMap();
@@ -248,17 +246,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     }
 
-    //if a key is pressed, we'll send it over to the PlayerBall class for processing
+    // keypress handler
     public void keyPressed(KeyEvent e){
         if(gameRunning == 4) {
-            player.keyPressed(e);
+            player.keyPressed(e); // player handles key controls when the game is running
         }
         else{
             gui.keyPressed(e);
         }
     }
 
-    //if a key is released, we'll send it over to the PlayerBall class for processing
+    // key release handler
     public void keyReleased(KeyEvent e){
         if(gameRunning == 4) {
             player.keyReleased(e);

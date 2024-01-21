@@ -1,3 +1,5 @@
+import org.w3c.dom.Element;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -8,15 +10,57 @@ public class GameUI  implements KeyListener {
 
     public int status;
 
-    public void keyPressed(KeyEvent e){
-      if (e.getKeyCode() == 32){
-          GamePanel.gameRunning  += 1;
-          GamePanel.gameRunning = GamePanel.gameRunning % 6;
-      }
-    }
+    public Image trackimage;
+    public Image carImage;
 
-    //if a key is released, we'll send it over to the PlayerBall class for processing
+    public void keyPressed(KeyEvent e){
+        if (e.getKeyCode() == 32){
+            org.w3c.dom.Element car;
+            GamePanel.gameRunning  += 1;
+            GamePanel.gameRunning = GamePanel.gameRunning % 6;
+
+            car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
+            carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+            trackimage = Toolkit.getDefaultToolkit().createImage(GamePanel.trackList.get(GamePanel.chosenTrackIndex) + ".png").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+        }
+        if(GamePanel.gameRunning == 1){
+            if (e.getKeyCode() == 37){
+                GamePanel.chosenTrackIndex -= 1;
+                GamePanel.chosenTrackIndex += GamePanel.trackList.size();
+                GamePanel.chosenTrackIndex  = GamePanel.chosenTrackIndex % GamePanel.trackList.size();
+                trackimage = Toolkit.getDefaultToolkit().createImage(GamePanel.trackList.get(GamePanel.chosenTrackIndex) + ".png").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+
+
+            }
+            if (e.getKeyCode() == 39){
+                GamePanel.chosenTrackIndex += 1;
+                GamePanel.chosenTrackIndex  = GamePanel.chosenTrackIndex % GamePanel.trackList.size();
+                trackimage = Toolkit.getDefaultToolkit().createImage(GamePanel.trackList.get(GamePanel.chosenTrackIndex) + ".png").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+
+            }
+        }
+        else if(GamePanel.gameRunning == 2){
+            if (e.getKeyCode() == 37){
+                org.w3c.dom.Element car;
+                GamePanel.chosencarID -= 1;
+                GamePanel.chosencarID += GamePanel.carList.getLength();
+                GamePanel.chosencarID  = GamePanel.chosencarID % GamePanel.carList.getLength();
+                car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
+                carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+            }
+            if (e.getKeyCode() == 39){
+                org.w3c.dom.Element car;
+                GamePanel.chosencarID += 1;
+                GamePanel.chosencarID = GamePanel.chosencarID % GamePanel.carList.getLength();
+                car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
+                carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+
+            }
+        }
+
+    }
     public void keyReleased(KeyEvent e){
+
 
     }
 
@@ -38,11 +82,31 @@ public class GameUI  implements KeyListener {
             g.setColor(Color.white);
             g.fillRect(0,0,(int) (1200 * GamePanel.scaleMultiplier), (int) (1200 * GamePanel.scaleMultiplier));
 
-
-
+            g.setColor(Color.black);
+            g.drawImage(trackimage, (int) (300 * GamePanel.scaleMultiplier),(int) (300 * GamePanel.scaleMultiplier), null);
+            g.setFont(new Font("Arial", Font.PLAIN, (int) (30*GamePanel.scaleMultiplier)));// sets text font
+            // displays information text
+            g.drawString("RaceTrack: " + GamePanel.trackList.get(GamePanel.chosenTrackIndex) , (int) (300* GamePanel.scaleMultiplier), (int) (250* GamePanel.scaleMultiplier));
+            g.drawString("Use left / right arrow keys to change. Press space to select and continue." , (int) (50* GamePanel.scaleMultiplier), (int) (950* GamePanel.scaleMultiplier));
 
         }
         else if(GamePanel.gameRunning == 2){ //car picking
+            Element car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
+            g.setColor(Color.white);
+            g.fillRect(0,0,(int) (1200 * GamePanel.scaleMultiplier), (int) (1200 * GamePanel.scaleMultiplier));
+            g.setColor(Color.black);
+            g.drawImage(carImage, (int) (300 * GamePanel.scaleMultiplier),(int) (100 * GamePanel.scaleMultiplier), null);
+            g.setFont(new Font("Arial", Font.PLAIN, (int) (30*GamePanel.scaleMultiplier)));// sets text font
+            // displays information text
+
+            g.drawString("Car: " + car.getElementsByTagName("carName").item(0).getTextContent() , (int) (300* GamePanel.scaleMultiplier), (int) (800* GamePanel.scaleMultiplier));
+            g.drawString("Use left / right arrow keys to change. Press space to select and continue." , (int) (50* GamePanel.scaleMultiplier), (int) (1150* GamePanel.scaleMultiplier));
+
+            g.setFont(new Font("Arial", Font.PLAIN, (int) (15*GamePanel.scaleMultiplier)));// sets text font
+
+            g.drawString(car.getElementsByTagName("description").item(0).getTextContent() , (int) (50* GamePanel.scaleMultiplier), (int) (950* GamePanel.scaleMultiplier));
+
+
 
         }
         else if(GamePanel.gameRunning == 5){ // end credits.

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="BlazeDashGame">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/LightSpeed_Beta_Bala_V_Darian_Y.zip!/" />
+      <root url="jar://$PROJECT_DIR$/LightSpeed_AlphaVersion.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
