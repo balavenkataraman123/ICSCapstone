@@ -13,13 +13,12 @@ public class RaceCompetitor extends Rectangle{
     public String trackingFilePath = "";
     // variables for the car physics
 
-    public Car raceCar;
+    public Car raceCar; // car's config files.
+    public int acceldir = 0; // direction of acceleration
+    public double forwardSpeed = 0; // car's speed
 
-    public int acceldir = 0;
-    public double forwardSpeed = 0;
-
-    public double carAngle, centerX, centerY;
-    public double carTurndir = 0;
+    public double carAngle, centerX, centerY; // location of car
+    public double carTurndir = 0; // turn direction
     public boolean reverseGearEngaged = false; // stores whether the user is going forward or backwards.
     public double health; // car's health
     // the above variable might need some explaining to Americans.
@@ -32,7 +31,7 @@ public class RaceCompetitor extends Rectangle{
 
 
 
-    //constructor creates car at given location with given dimensions
+    //constructor creates car at given location with given car data.
     public RaceCompetitor(double x, double y, double inpCarAngle, int carID, String chosenTrack){
         super((int) x, (int) y, 2,5);
         raceCar = new Car(carID); // saves car's data
@@ -58,7 +57,7 @@ public class RaceCompetitor extends Rectangle{
         }
         if(e.getKeyChar() == 's'){
             acceldir = -1;
-            if(Math.abs(carTurndir) == 1) {
+            if(Math.abs(carTurndir) == 1) { // simulates oversteer on deceleration, when a car's weight shifts to the front and gives front wheels more grip to turn.
                 carTurndir *= 1.25;
             }
         }
@@ -117,26 +116,24 @@ public class RaceCompetitor extends Rectangle{
         }
 
     }
-    public void bounce(int crashes){ // bounces the car off the wall if it crashes.
+    public void bounce(int crashes){ // bounces the car off the wall if it crashes. Reduces speed and calculates damage inflicted on the car.
 
         // checks the directions the car has been hit from.
-        // front right and front left: stops fully.
-        // front right: deflected to the left.
-        if(!reverseGearEngaged){
-            if((crashes & 3) == 3){
+        if(!reverseGearEngaged){ // when driving forward
+            if((crashes & 3) == 3){ // full frontal crash
                 centerX -= Math.sin(carAngle) * forwardSpeed / 30;
                 centerY += Math.cos(carAngle) * forwardSpeed / 30;
                 forwardSpeed = 0;
                 health -= forwardSpeed;
             }
-            else if((crashes & 1) != 0){
+            else if((crashes & 1) != 0){ // scrape right side
                 carAngle += 0.2;
                 centerX -= Math.sin(carAngle) * forwardSpeed / 30;
                 centerY += Math.cos(carAngle) * forwardSpeed / 30;
                 health -= forwardSpeed * 0.5;
                 forwardSpeed = Math.pow(forwardSpeed, 0.7);
             }
-            else if((crashes & 2) != 0){
+            else if((crashes & 2) != 0){ // scrape left side
                 carAngle -= 0.2;
                 centerX -= Math.sin(carAngle) * forwardSpeed / 30;
                 centerY += Math.cos(carAngle) * forwardSpeed / 30;
@@ -144,22 +141,22 @@ public class RaceCompetitor extends Rectangle{
                 forwardSpeed = Math.pow(forwardSpeed, 0.7);
             }
         }
-        else{
-            if((crashes & 12) == 12){
+        else{ // when driving backwards
+            if((crashes & 12) == 12){ // hit the full rear
                 centerX += Math.sin(carAngle) * forwardSpeed / 30;
                 centerY -= Math.cos(carAngle) * forwardSpeed / 30;
                 forwardSpeed = 0;
                 health -= forwardSpeed;
 
             }
-            else if((crashes & 4) != 0){
+            else if((crashes & 4) != 0){ // scrape the right side
                 carAngle += 0.2;
                 centerX += Math.sin(carAngle) * forwardSpeed / 30;
                 centerY -= Math.cos(carAngle) * forwardSpeed / 30;
                 health -= forwardSpeed * 0.5;
                 forwardSpeed = Math.pow(forwardSpeed, 0.7);
             }
-            else if((crashes & 8) != 0){
+            else if((crashes & 8) != 0){ // scrape the left side
                 carAngle -= 0.2;
                 centerX += Math.sin(carAngle) * forwardSpeed / 30;
                 centerY -= Math.cos(carAngle) * forwardSpeed / 30;
@@ -170,7 +167,7 @@ public class RaceCompetitor extends Rectangle{
     }
 
     //called frequently from the GamePanel class
-    //draws the current location of the car to the screen
+    //draws the car in the center of the screen.
     public void draw(Graphics2D g){ // draws car at center location on screean.
         g.drawImage(raceCar.carImage,(int) (600 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), (int) (900 * GamePanel.scaleMultiplier + 0.5 - raceCar.CAR_WIDTH * GamePanel.pixelsPerMeter/2), null);
     }
@@ -183,7 +180,7 @@ public class RaceCompetitor extends Rectangle{
                 for(String e : ghostCoords){
                     out.write(e);
                 }
-                out.close();
+                out.close(); // stops memory leak
 
 
             }

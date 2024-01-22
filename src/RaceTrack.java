@@ -1,4 +1,4 @@
-// This class is not used for now, as the test racetrack is hard coded in the main method. It will be used for racetrack pre-rendering and mapping for collision detection.
+// Handles race track loading and collission handling.
 // ICS Summative, Bala V, Darian Y, ICS4U 2024. LightSpeed racing game.
 
 import javax.imageio.ImageIO;
@@ -19,23 +19,22 @@ public class RaceTrack {
     public String fullImagePath;
     public double mapPPM;
 
-    double last_segment_x = 9999;
+    double last_segment_x = 9999; // placeholder .
     double last_segment_y = 9999;
 
-    public double sx, sy, sa;
+    public double sx, sy, sa; // starting position and angle
 
     public Image imCache; // cached image for rendering
-    public int imheight, imwidth;
-    public int numCheckpoints;
-    public double trHeight, trWidth;
+    public int imheight, imwidth; // image res
+    public int numCheckpoints; // track chcekpoints
+    public double trHeight, trWidth; // track size in meters
     public RaceTrack(String trackPath) throws IOException { // constructs the race track and loads its properties from a file.
         File imageFile;
         fullImagePath = trackPath + ".png";
-        imageFile = new File(fullImagePath);
-        BufferedReader reader = new BufferedReader(new FileReader(trackPath + ".txt"));
-        trHeight = parseFloat(reader.readLine());
-
-
+        imageFile = new File(fullImagePath); // reads image from track image file.
+        BufferedReader reader = new BufferedReader(new FileReader(trackPath + ".txt")); // reads track data file.
+        // gets parameters
+        trHeight = parseFloat(reader.readLine()); // loads track's size parameters and starting location.
         fullImage = ImageIO.read(imageFile);
         imheight = fullImage.getHeight(null);
         imwidth = fullImage.getWidth(null);
@@ -51,10 +50,10 @@ public class RaceTrack {
     public boolean getCurrentTrackSegment(double centerx, double centery) {
         double tl_cornerx, tl_cornery, br_cornerx, br_cornery;
         // this gets an image that is 48 by 48 meters.
-        if (Math.max(Math.abs(last_segment_x - centerx), Math.abs(last_segment_y - centery)) > 6) {
+        if (Math.max(Math.abs(last_segment_x - centerx), Math.abs(last_segment_y - centery)) > 6) { // if user has left the image area.
             last_segment_y = centery;
             last_segment_x = centerx;
-            tl_cornerx = Math.max(0, last_segment_x - 24); // finds location of image
+            tl_cornerx = Math.max(0, last_segment_x - 24); // finds location of image to cache.
             tl_cornery = Math.max(0, last_segment_y - 24);
             br_cornerx = Math.min(trWidth, last_segment_x + 24);
             br_cornery = Math.min(trHeight, last_segment_y + 24);
@@ -71,7 +70,7 @@ public class RaceTrack {
     public int HasCrashed(double centerX, double centerY, double carAngle){ // checks if the user has crashed.
         double[]corners_x = {- 1,  1, 1,  -1}; // relative location of all the points of the car
         double[]corners_y = {-2.5, -2.5, 2.5, 2.5};
-        double caSin = Math.sin(carAngle);
+        double caSin = Math.sin(carAngle); // sin and cos of angle
         double caCos = Math.cos(carAngle);
         double currentX, currentY;
         int crashes = 0;
@@ -89,7 +88,7 @@ public class RaceTrack {
             int green = (color & 0xff00) >> 8;
             int red = (color & 0xff0000) >> 16;
             if(red+blue+green <= 60){
-                crashes = crashes | 1 << i; // stores the corner of the car that got hit, by setting that bit to
+                crashes = crashes | 1 << i; // stores the corner of the car that got hit, by setting that bit to 1
             }
         }
         return crashes;
@@ -99,15 +98,13 @@ public class RaceTrack {
         int blue = color & 0xff;
         int green = (color & 0xff00) >> 8;
         int red = (color & 0xff0000) >> 16;
-        if(red+blue+green >= 650){
+        if(red+blue+green >= 650){ // checkpoints are white lines on image.
             return  true;
         }
         return false;
     }
-    public Image getMiniMap(){
+    public Image getMiniMap(){  // returns track minimap.
         return Toolkit.getDefaultToolkit().createImage(fullImagePath).getScaledInstance((int) (200 * GamePanel.scaleMultiplier), (int) (200 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
     }
 
-    public void checkPositions(RaceCompetitor player) {
-    }
 }

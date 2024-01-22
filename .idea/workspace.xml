@@ -6,11 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="a416c2cb-8678-4a49-9539-ba0f303d966e" name="Changes" comment="Everything is over. I can rest now.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cars.XML" beforeDir="false" afterPath="$PROJECT_DIR$/cars.XML" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RaceTrack1_Ghost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/RaceTrack1_Ghost.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RaceTrack2_Ghost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/RaceTrack2_Ghost.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Car.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Car.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GameUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GhostRider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GhostRider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RaceCompetitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RaceCompetitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RaceTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RaceTrack.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +67,9 @@
       <updated>1705802325846</updated>
       <workItem from="1705802327903" duration="6551000" />
       <workItem from="1705809061265" duration="93000" />
-      <workItem from="1705883740840" duration="3026000" />
+      <workItem from="1705883740840" duration="3136000" />
+      <workItem from="1705889339060" duration="825000" />
+      <workItem from="1705893564667" duration="2576000" />
     </task>
     <task id="LOCAL-00001" summary="Everything is over. I can rest now.">
       <option name="closed" value="true" />
@@ -81,7 +87,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705809097893</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Everything is over. I can rest now.">
+      <option name="closed" value="true" />
+      <created>1705887008150</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1705887008150</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

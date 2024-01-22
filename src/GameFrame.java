@@ -2,6 +2,7 @@
 It is a child of JFrame because JFrame manages frames
 Runs the constructor in GamePanel class
 
+ICS summative assignment racing game by Bala and Darian.
 */
 import java.awt.*;
 import javax.swing.*;

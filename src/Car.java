@@ -1,17 +1,6 @@
 // used to store the Car's data
 // ICS Summative, Bala V, Darian Y, ICS4U 2024. LightSpeed racing game.
-// Note: Right now, could not get XML reading to work so data is being hard coded to test.
-/* These are the import statements for code which is not being used at the moment.
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.awt.image.BufferedImage;
-
-import static java.lang.Float.parseFloat;
-
-*/
+// reads XML data to generate car configurations
 import org.w3c.dom.Element;
 
 import java.awt.*;
@@ -29,19 +18,19 @@ public class Car {
     public double maxTireGrip, maxAccelB, maxAccelM, maxBrake, maxSpeed,turnRadius, health;
     public Image carImage;
     public Car(int carID){
-        try{
-        Element car = (Element) GamePanel.carList.item(carID);
-        carName = car.getAttribute("id");
-        maxTireGrip = parseFloat(car.getElementsByTagName("maxTireGrip").item(0).getTextContent());
-        maxAccelM = parseFloat(car.getElementsByTagName("maxAccelM").item(0).getTextContent());
-        maxAccelB = parseFloat(car.getElementsByTagName("maxAccelB").item(0).getTextContent());
-        maxSpeed = parseFloat(car.getElementsByTagName("maxSpeed").item(0).getTextContent());
-        maxBrake = parseFloat(car.getElementsByTagName("maxBrake").item(0).getTextContent());
-        turnRadius = parseFloat(car.getElementsByTagName("turnradius").item(0).getTextContent());
-        health = parseFloat(car.getElementsByTagName("maxdamage").item(0).getTextContent());
-        carImage = Toolkit.getDefaultToolkit().createImage(carName + ".png").getScaledInstance(GamePanel.pixelsPerMeter*CAR_WIDTH, GamePanel.pixelsPerMeter*CAR_LENGTH, Image.SCALE_DEFAULT); // Returns an image of the car scaled to the correct size.
+        try{ // reads the car's data from XML
+            Element car = (Element) GamePanel.carList.item(carID);
+            carName = car.getAttribute("id");
+            maxTireGrip = parseFloat(car.getElementsByTagName("maxTireGrip").item(0).getTextContent());
+            maxAccelM = parseFloat(car.getElementsByTagName("maxAccelM").item(0).getTextContent());
+            maxAccelB = parseFloat(car.getElementsByTagName("maxAccelB").item(0).getTextContent());
+            maxSpeed = parseFloat(car.getElementsByTagName("maxSpeed").item(0).getTextContent());
+            maxBrake = parseFloat(car.getElementsByTagName("maxBrake").item(0).getTextContent());
+            turnRadius = parseFloat(car.getElementsByTagName("turnradius").item(0).getTextContent());
+            health = parseFloat(car.getElementsByTagName("maxdamage").item(0).getTextContent());
+            carImage = Toolkit.getDefaultToolkit().createImage(carName + ".png").getScaledInstance(GamePanel.pixelsPerMeter*CAR_WIDTH, GamePanel.pixelsPerMeter*CAR_LENGTH, Image.SCALE_DEFAULT); // Returns an image of the car scaled to the correct size.
         }
-        catch (Exception e) {
+        catch (Exception e) {// in case car data isn't read.
             e.printStackTrace();
             System.exit(1);
         }
@@ -65,12 +54,12 @@ public class Car {
         // time = distance / speed.
         return(Math.min((speed / turnRadius), (maxTireGrip / speed)));
     }
-    public double calculateAcceleration(int direction, double speed){  // Increases
+    public double calculateAcceleration(int direction, double speed){  // uses linear interpolation to calculate car's acceleration.
 
         if(direction == 1){ // returns acceleration in ms^-2 a the car's speed.
             return ((maxAccelM * speed) + maxAccelB) / 60; // divide by 60 since 60 frames per second
         }
-        else{
+        else{ // car's braking speed. more or less constant.
             return maxBrake/60;
         }
     }

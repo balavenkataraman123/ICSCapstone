@@ -23,25 +23,24 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
-    public static double scaleMultiplier = 1 ; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
+    public static double scaleMultiplier = 0.5 ; // scale factor to adjust for lower or higher resolution screens. 0.5 works for 1366x768 displays.
 
     //dimensions of window
     public static final int GAME_WIDTH = (int) (1200 * scaleMultiplier); // game resolution
     public static final int GAME_HEIGHT = (int) ( 1200 * scaleMultiplier);
     public static int pixelsPerMeter = (int) (50 * scaleMultiplier); // display scaling
-    public static NodeList carList;
-    public static ArrayList<String> trackList = new ArrayList();
-    public static int gameRunning = 0;
-    public static int chosencarID = 1;
+    public static NodeList carList; // car data
+    public static ArrayList<String> trackList = new ArrayList(); // track file names
+    public static int gameRunning = 0; // game state
+    public static int chosencarID = 1; // car to be used in race
 
-    public static int chosenTrackIndex = 0;
-    public static String chosenTrack = "";
-    public static String endScreenMessage = "";
-    public double TLXmeters, TLYmeters;
-
-    public Thread gameThread;
+    public static int chosenTrackIndex = 0; // track to be used in race
+    public static String chosenTrack = ""; // name of track to be used in race
+    public static String endScreenMessage = ""; // message to player
+    public double TLXmeters, TLYmeters; // rendering location
+    public Thread gameThread; // thread to run game
     public static Image splashScreenBG = Toolkit.getDefaultToolkit().createImage("splashscreen.png").getScaledInstance((int) (1200 * scaleMultiplier), (int) (1200 * scaleMultiplier), Image.SCALE_DEFAULT); // background image of the splash screen.
-    public Image minimap;
+    public Image minimap; // track map
 
     public Clip introSong; // Audio file to play start screen music.
 
@@ -49,11 +48,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     public RaceCompetitor player; // player object
 
-    public GhostRider ghost;
+    public GhostRider ghost; // competition for the player - the "ghost" that drove last time.
 
     public RaceTrack raceTrack; // racetrack object
 
-    public GameUI gui = new GameUI();
+    public GameUI gui = new GameUI(); // game UI renderer
 
     public GamePanel(){
         File curDir =  new File("./"); // set this file path.
@@ -103,58 +102,49 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         gameThread.start();
     }
     public void paintGame(Graphics g){ // paint class, for if the game is running
-        AffineTransform mapTransform;
+        AffineTransform mapTransform; // matrix transformations used in rendering.
         AffineTransform ghostTransform;
-
+        // this program crops small image segments from the track image and renders them to preserve memory. this code is for that.
         boolean imChanged;
         Graphics2D g2d = (Graphics2D) g;
-        imChanged = raceTrack.getCurrentTrackSegment(player.centerX, player.centerY);
+        imChanged = raceTrack.getCurrentTrackSegment(player.centerX, player.centerY); // reloads cache image from track class if player moves out of bounds
 
-        if(imChanged){
+        if(imChanged){ // sets new image segment location if cache image changes
             TLXmeters = Math.max(0, player.centerX - 24);
             TLYmeters = Math.max(0, player.centerY - 24);
         }
-
-        double gcx = 600*scaleMultiplier + (ghost.centerX - player.centerX) * pixelsPerMeter;
+        // main graphics code
+        double gcx = 600*scaleMultiplier + (ghost.centerX - player.centerX) * pixelsPerMeter; // change in x and y coordinate for ghost car.
         double gcy = 900*scaleMultiplier + (ghost.centerY - player.centerY) * pixelsPerMeter;
-        ghostTransform = AffineTransform.getTranslateInstance(gcx,gcy);
+        ghostTransform = AffineTransform.getTranslateInstance(gcx,gcy); // adds translation to matrix transformation
         mapTransform = AffineTransform.getTranslateInstance((600*scaleMultiplier - pixelsPerMeter*(player.centerX - TLXmeters)), (900*scaleMultiplier - pixelsPerMeter*(player.centerY - TLYmeters))); // shifts the track so that the car is located in the middle of the screen, closer to the bottom.
         mapTransform.rotate(-player.carAngle, pixelsPerMeter*(player.centerX - TLXmeters), pixelsPerMeter*(player.centerY - TLYmeters));// applies a rotational matrix transformation on the track image so it turns along with the car.
         ghostTransform.rotate(-player.carAngle, pixelsPerMeter*(player.centerX - ghost.centerX),pixelsPerMeter*(player.centerY - ghost.centerY));// applies a rotational matrix transformation on the track image so it turns along with the car.
-        ghostTransform.rotate(ghost.carAngle);
+        ghostTransform.rotate(ghost.carAngle); // make the ghost car turn in its direction
         g2d.drawImage(raceTrack.imCache, mapTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
-        g2d.drawImage(ghost.carImg, ghostTransform, null); // draws the track image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
+        g2d.drawImage(ghost.carImg, ghostTransform, null); // draws the ghost car image with the matrix transformation applied. Will look into using SIMD to improve maximum frame rate.
 
-        // code which draws the mini map. might not work well when scale is changed. need to fix, so its commented.
-        g2d.drawImage(minimap, (int) (20*scaleMultiplier),(int)(880 * scaleMultiplier),null);
+        // code which draws the mini map.
+        g2d.drawImage(minimap, (int) (20*scaleMultiplier),(int)(880 * scaleMultiplier),null); // draws map image
         g2d.setColor(Color.black);
+        // draws player location as black dot
         g2d.fillOval( (int)((player.centerX / raceTrack.trWidth) * 200 * scaleMultiplier +  (20*scaleMultiplier) - 5),  (int)((player.centerY / raceTrack.trHeight) * 200 * scaleMultiplier +  (880*scaleMultiplier) - 5),10,10); // draws the car on the map
         g2d.setColor(Color.white);
-
+        // draws ghost location as a white dot
         g2d.fillOval( (int)((ghost.centerX / raceTrack.trWidth) * 200 * scaleMultiplier +  (20*scaleMultiplier) - 5),  (int)((ghost.centerY / raceTrack.trHeight) * 200 * scaleMultiplier +  (880*scaleMultiplier) - 5),10,10); // draws the car on the map
-
         // draws text UI elements
-
         g2d.setFont(new Font("Arial", Font.PLAIN, (int) (30*scaleMultiplier)));// sets text font
-        //g2d.drawString("Minimap", 20,850);
         g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1170*scaleMultiplier));
         g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2 * 1.61) + "kmph",20,20);
         g2d.drawString("Remaining car health: " + (int) (100 * player.health / player.raceCar.health) + "%",20,60);
         g2d.drawString("Remaining checkpoints: " + (raceTrack.numCheckpoints - player.numCH),20,100);
 
-
-
-
-
-        player.draw(g2d);
-        raceTrack.checkPositions(player);
+        player.draw(g2d); // draw player's car on top of everything.
     }
 
     public void paintSplashScreen(Graphics g){ // draws the pre game UI
         //gui.configure(gameRunning);;
         gui.draw(g);
-
-
     }
 
     //paint is a method in java.awt library that we are overriding. It is a special method - it is called automatically in the background in order to update what appears in the window. You NEVER call paint() yourself
@@ -171,37 +161,33 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
     }
 
-    //call the move methods in other classes to update positions
-    //this method is constantly called from run(). By doing this, movements appear fluid and natural. If we take this out the movements appear sluggish and laggy
-    public void move(){ // updates the car position
+    //Updates the position of the car and checks if it is crashed.
+    public void move(){
         int crashes;
-        if(gameRunning == 4) {
-            player.move();
-            ghost.move();
-            crashes = raceTrack.HasCrashed(player.centerX,player.centerY, player.carAngle);
-            player.bounce(crashes);
-            if(player.health < 0){
+        if(gameRunning == 4) { // only does it if the game is running
+            player.move(); // moves the player
+            ghost.move();// switches ghost to next position snapshot
+            crashes = raceTrack.HasCrashed(player.centerX,player.centerY, player.carAngle); // sides which the player has crashed in
+            player.bounce(crashes); // update player with crash physics
+            if(player.health < 0){ // if player wrecks the car
                 endScreenMessage = "You totalled your car";
                 gameRunning = 5;
             }
-            if(raceTrack.PassedCheckpoint(player.centerX, player.centerY)){
-                player.verifyCheckPoint();
-
-                if(player.numCH > raceTrack.numCheckpoints){
-                    if(ghost.finished_race){
-                        endScreenMessage = "You finished the race. Ghost wins";
+            if(raceTrack.PassedCheckpoint(player.centerX, player.centerY)){ // verifies checkpoint progress
+                player.verifyCheckPoint(); // checks if the checkpoint is not repeated
+                if(player.numCH > raceTrack.numCheckpoints){ // if player has finished the race
+                    if(ghost.finished_race){ // if ghost finishes race before player
+                        endScreenMessage = "You finished the race. Ghost wins"; // updates end screen message
                     }
-                    else{
+                    else{ // if ghost is not finished yet
                         endScreenMessage = "You finished the race, You win. You are now the ghost.";
                         player.writeCoords();
                     }
-                    gameRunning = 5;
+                    gameRunning = 5; // changes game state to end condition
                 }
             }
         }
     }
-
-    //handles all collision detection and responds accordingly
 
     //run() method is what makes the game continue running without end. It calls other methods to move objects,  check for collision, and update the screen
     public void run(){
@@ -226,8 +212,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             }
         }
     }
-    public void startGame(){ // to do: add comments. Also, the ghost rider picks a random file for that given track. These files are recorded by other players.
-        chosenTrack = trackList.get(chosenTrackIndex);
+    public void startGame(){ // called to start the game
+        chosenTrack = trackList.get(chosenTrackIndex); // sets track, player, and ghost variables.
         try {
             raceTrack = new RaceTrack(chosenTrack);
             minimap = raceTrack.getMiniMap();
@@ -236,14 +222,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             e.printStackTrace();
             System.out.println("Could not load the race track file. ");
             System.exit(1);
-            }
-        player = new RaceCompetitor(raceTrack.sx, raceTrack.sy, raceTrack.sa, chosencarID, chosenTrack);
-        ghost = new GhostRider(chosenTrack + "_Ghost.txt");
-        if(musicWorks){
+        }
+        player = new RaceCompetitor(raceTrack.sx, raceTrack.sy, raceTrack.sa, chosencarID, chosenTrack); // places player on start line of the track
+        ghost = new GhostRider(chosenTrack + "_Ghost.txt"); // initializes the ghost
+        if(musicWorks){ // stops the intro song for the game
             introSong.stop();
         }
         gameRunning = 4;  // starts the game and stops the music when space is pressed.
-
     }
 
     // keypress handler
@@ -252,13 +237,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             player.keyPressed(e); // player handles key controls when the game is running
         }
         else{
-            gui.keyPressed(e);
+            gui.keyPressed(e); // if not GUI handles it.
         }
     }
 
     // key release handler
     public void keyReleased(KeyEvent e){
-        if(gameRunning == 4) {
+        if(gameRunning == 4) { // handled by player if game is running and UI otherwise.
             player.keyReleased(e);
         }
     }
