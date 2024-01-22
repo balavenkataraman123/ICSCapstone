@@ -44,7 +44,7 @@ public class Car {
     // the time taken for this is pi * r / v = pi * v / c
     // this is also the time to turn 180 degrees / pi radians, so the angular velocity is c/v
 
-    public double calculateAngularVelocity(double speed){
+    public double calculateAngularVelocity(double speed){ // uses linear interpolation to calculate car's velocity. 
         if(speed <= 0.5){ // If the car is nearly stationary, you can't actually turn it.
             return 0;
         }
