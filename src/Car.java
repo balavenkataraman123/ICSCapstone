@@ -26,9 +26,7 @@ public class Car {
 
     // Acceleration reduces linearly with the speed of the car, so it is almost zero as the car approaches max speed. This is how real cars work.
     // so since it's y=MX+B where X is speed, there is an M and B.
-    public double maxTireGrip, maxAccelB, maxAccelM, maxBrake, maxSpeed,turnRadius;
-    public int nextcheckpoint;
-
+    public double maxTireGrip, maxAccelB, maxAccelM, maxBrake, maxSpeed,turnRadius, health;
     public Image carImage;
     public Car(int carID){
         try{
@@ -40,6 +38,7 @@ public class Car {
         maxSpeed = parseFloat(car.getElementsByTagName("maxSpeed").item(0).getTextContent());
         maxBrake = parseFloat(car.getElementsByTagName("maxBrake").item(0).getTextContent());
         turnRadius = parseFloat(car.getElementsByTagName("turnradius").item(0).getTextContent());
+        health = parseFloat(car.getElementsByTagName("maxdamage").item(0).getTextContent());
         carImage = Toolkit.getDefaultToolkit().createImage(carName + ".png").getScaledInstance(GamePanel.pixelsPerMeter*CAR_WIDTH, GamePanel.pixelsPerMeter*CAR_LENGTH, Image.SCALE_DEFAULT); // Returns an image of the car scaled to the correct size.
         }
         catch (Exception e) {

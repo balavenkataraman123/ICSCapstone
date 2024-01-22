@@ -20,7 +20,7 @@ public class GameUI  implements KeyListener {
             GamePanel.gameRunning = GamePanel.gameRunning % 6;
 
             car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
-            carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+            carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (1000 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
             trackimage = Toolkit.getDefaultToolkit().createImage(GamePanel.trackList.get(GamePanel.chosenTrackIndex) + ".png").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
         }
         if(GamePanel.gameRunning == 1){
@@ -46,21 +46,20 @@ public class GameUI  implements KeyListener {
                 GamePanel.chosencarID += GamePanel.carList.getLength();
                 GamePanel.chosencarID  = GamePanel.chosencarID % GamePanel.carList.getLength();
                 car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
-                carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+                carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (1000 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
             }
             if (e.getKeyCode() == 39){
                 org.w3c.dom.Element car;
                 GamePanel.chosencarID += 1;
                 GamePanel.chosencarID = GamePanel.chosencarID % GamePanel.carList.getLength();
                 car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
-                carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (600 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
+                carImage = Toolkit.getDefaultToolkit().createImage(car.getAttribute("id") + "icon.jpg").getScaledInstance((int) (1000 * GamePanel.scaleMultiplier), (int) (600 * GamePanel.scaleMultiplier), Image.SCALE_DEFAULT);
 
             }
         }
 
     }
     public void keyReleased(KeyEvent e){
-
 
     }
 
@@ -92,19 +91,21 @@ public class GameUI  implements KeyListener {
         }
         else if(GamePanel.gameRunning == 2){ //car picking
             Element car = (org.w3c.dom.Element) GamePanel.carList.item(GamePanel.chosencarID);
+            String[] carDesc = car.getElementsByTagName("description").item(0).getTextContent().split("/");
             g.setColor(Color.white);
             g.fillRect(0,0,(int) (1200 * GamePanel.scaleMultiplier), (int) (1200 * GamePanel.scaleMultiplier));
             g.setColor(Color.black);
-            g.drawImage(carImage, (int) (300 * GamePanel.scaleMultiplier),(int) (100 * GamePanel.scaleMultiplier), null);
+            g.drawImage(carImage, (int) (100 * GamePanel.scaleMultiplier),(int) (100 * GamePanel.scaleMultiplier), null);
             g.setFont(new Font("Arial", Font.PLAIN, (int) (30*GamePanel.scaleMultiplier)));// sets text font
             // displays information text
 
             g.drawString("Car: " + car.getElementsByTagName("carName").item(0).getTextContent() , (int) (300* GamePanel.scaleMultiplier), (int) (800* GamePanel.scaleMultiplier));
             g.drawString("Use left / right arrow keys to change. Press space to select and continue." , (int) (50* GamePanel.scaleMultiplier), (int) (1150* GamePanel.scaleMultiplier));
 
-            g.setFont(new Font("Arial", Font.PLAIN, (int) (15*GamePanel.scaleMultiplier)));// sets text font
+            g.setFont(new Font("Arial", Font.PLAIN, (int) (30*GamePanel.scaleMultiplier)));// sets text font
 
-            g.drawString(car.getElementsByTagName("description").item(0).getTextContent() , (int) (50* GamePanel.scaleMultiplier), (int) (950* GamePanel.scaleMultiplier));
+            g.drawString(carDesc[0] , (int) (50* GamePanel.scaleMultiplier), (int) (900* GamePanel.scaleMultiplier));
+            g.drawString(carDesc[1] , (int) (50* GamePanel.scaleMultiplier), (int) (980* GamePanel.scaleMultiplier));
 
 
 

@@ -16,20 +16,17 @@ public class RaceCompetitor extends Rectangle{
     public Car raceCar;
 
     public int acceldir = 0;
-    public double carAngle = 0;
     public double forwardSpeed = 0;
-    public double centerX;
-    public double centerY;
 
+    public double carAngle, centerX, centerY;
     public double carTurndir = 0;
-    public boolean reverseGearEngaged = false;
-
-    public double health = 100;
-
-    public int numCH = 0;
+    public boolean reverseGearEngaged = false; // stores whether the user is going forward or backwards.
+    public double health; // car's health
+    // the above variable might need some explaining to Americans.
+    public int numCH = 0; // number of checkpoints
     public double lastCHX = 99999; // checkpoint location
     public double lastCHY = 99999;
-    public PrintWriter out;
+    public PrintWriter out; // writes the files to the ghost.
     public ArrayList<String> ghostCoords = new ArrayList<>(); // location log, as you become the new ghost if you beat it.
 
 
@@ -43,6 +40,7 @@ public class RaceCompetitor extends Rectangle{
         centerY = y;
         carAngle = inpCarAngle;
         ghostCoords.add(carID + "\n"); // logs the car you have.
+        health = raceCar.health;
         trackingFilePath = chosenTrack + "_Ghost.txt"; // sets up "ghost" file. You become the new ghost if you beat it.
     }
 

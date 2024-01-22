@@ -78,7 +78,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
             System.exit(1);
         }
         try{ // tries to load an audio file
-            audioFile = new File("tokyodriftsong.wav");
+            audioFile = new File("introsong.wav");
             audioStream = AudioSystem.getAudioInputStream(audioFile);
             // Create a clip
             introSong = AudioSystem.getClip();
@@ -139,7 +139,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         //g2d.drawString("Minimap", 20,850);
         g2d.drawString("(C) 2024, Subpixel Studios",20,(int) (int) (1170*scaleMultiplier));
         g2d.drawString("Speed: " + (int) (player.forwardSpeed * 2.2 * 1.61) + "kmph",20,20);
-        g2d.drawString("Remaining car health: " + (int) player.health + "%",20,60);
+        g2d.drawString("Remaining car health: " + (int) (100 * player.health / player.raceCar.health) + "%",20,60);
         g2d.drawString("Remaining checkpoints: " + (raceTrack.numCheckpoints - player.numCH),20,100);
 
 
